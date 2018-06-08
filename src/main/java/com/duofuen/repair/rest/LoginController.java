@@ -1,5 +1,6 @@
 package com.duofuen.repair.rest;
 
+import com.duofuen.repair.domain.UserRepository;
 import com.duofuen.repair.service.LoginService;
 import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
@@ -8,23 +9,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
+
 import java.util.HashMap;
 
 @RestController
-public class CommonController {
+@RequestMapping(path = ROOT_PATH)
+public class LoginController {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final LoginService loginService;
 
     @Autowired
-    public CommonController(LoginService loginService) {
+    public LoginController(LoginService loginService) {
         this.loginService = loginService;
+    }
+
+    @PostMapping(path = "/getValidateCode")
+    public BaseResponse<RbNull> getValidateCode(@RequestBody HashMap<String, String> map) {
+        LOGGER.info("==>restful method loginByOpenId called, parameter: " + map);
+        BaseResponse<RbNull> baseResponse;
+
+        String phoneNum = map.get(Const.Rest.LOGIN_PHONENUM);
+        if (StringUtils.isEmpty(phoneNum)) {
+            baseResponse = BaseResponse.fail("empty parameter phoneNum");
+        } else if (!loginService.checkPhoneNumExists(phoneNum)) {
+            baseResponse = BaseResponse.fail("invalid phone number");
+        } else {
+            boolean sent = loginService.sendValidateCode(phoneNum);
+            if (sent) {
+                baseResponse = BaseResponse.success(new RbNull());
+            } else {
+                baseResponse = BaseResponse.fail("validate code sent fail");
+            }
+        }
+        return baseResponse;
     }
 
     @PostMapping(path = "/loginByPhoneNum")
     public BaseResponse<RbLogin> loginByPhoneNum(@RequestBody HashMap<String, String> map) {
-        LOGGER.info("restful method loginByPhoneNum called, parameter: " + map);
+        LOGGER.info("==>restful method loginByPhoneNum called, parameter: " + map);
         BaseResponse<RbLogin> baseResponse;
 
         String phoneNum = map.get(Const.Rest.LOGIN_PHONENUM);
@@ -40,11 +65,12 @@ public class CommonController {
 
     }
 
-    @GetMapping("/loginByOpenId")
-    public BaseResponse<RbLogin> loginByOpenId(String openId) {
-        LOGGER.info("restful method loginByOpenId called, openId: " + openId);
+    @PostMapping(path = "/loginByOpenId")
+    public BaseResponse<RbLogin> loginByOpenId(@RequestBody HashMap<String, String> map) {
+        LOGGER.info("==>restful method loginByOpenId called, parameter: " + map);
         BaseResponse<RbLogin> baseResponse;
 
+        String openId = map.get(Const.Rest.LOGIN_OPEN_ID);
         if (StringUtils.isEmpty(openId)) {
             baseResponse = BaseResponse.fail("empty parameter openId");
         } else {

@@ -1,5 +1,5 @@
 package com.duofuen.repair.rest;
 
-abstract class BaseResultBody {
+public abstract class BaseResultBody {
 
 }

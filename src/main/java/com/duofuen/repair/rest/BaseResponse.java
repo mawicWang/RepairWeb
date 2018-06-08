@@ -27,11 +27,11 @@ public class BaseResponse<RB extends BaseResultBody> {
         this.result = result;
     }
 
-    static <R extends BaseResultBody> BaseResponse<R> success(R result) {
+    public static <R extends BaseResultBody> BaseResponse<R> success(R result) {
         return new BaseResponse<>(result);
     }
 
-    static <R extends BaseResultBody> BaseResponse<R> fail(String failMsg) {
+    public static <R extends BaseResultBody> BaseResponse<R> fail(String failMsg) {
         return new BaseResponse<>(FAIL, failMsg);
     }
 
