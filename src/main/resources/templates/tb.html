@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>tb</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-xs-12">
+        <!-- page content goes here -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover ">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>姓名</th>
+                    <th>手机号</th>
+                    <th>openID</th>
+                    <th>角色</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row,iterStat : ${listUser}">
+                    <td th:text="${row.id}"></td>
+                    <td th:text="${row.username}"></td>
+                    <td th:text="${row.phoneNum}"></td>
+                    <td th:text="${row.openId}"></td>
+                    <td th:text="${row.roleCode}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+</body>
+</html>
