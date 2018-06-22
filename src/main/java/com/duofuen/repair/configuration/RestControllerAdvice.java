@@ -1,4 +1,4 @@
-package com.duofuen.repair.Configuration;
+package com.duofuen.repair.configuration;
 
 import com.duofuen.repair.rest.BaseResponse;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ public class RestControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    BaseResponse<?> handleException(Exception e) {
+    public BaseResponse<?> handleException(Exception e) {
         LOGGER.info("handling Exception {}, {}", e.getClass(), e.getMessage());
         return BaseResponse.fail(e.toString());
     }

@@ -1,17 +1,19 @@
 package com.duofuen.repair.rest;
 
-import com.duofuen.repair.domain.UserRepository;
 import com.duofuen.repair.service.LoginService;
 import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+
+import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
 
 @RestController
 @RequestMapping(path = ROOT_PATH)

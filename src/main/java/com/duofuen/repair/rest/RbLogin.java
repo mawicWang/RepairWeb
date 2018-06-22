@@ -7,6 +7,8 @@ public class RbLogin extends BaseResultBody {
 
     private String userId;
 
+    private String token;
+
     public RbLogin(String roleCode, String userId) {
         this.roleCode = roleCode;
         this.userId = userId;
@@ -26,5 +28,13 @@ public class RbLogin extends BaseResultBody {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

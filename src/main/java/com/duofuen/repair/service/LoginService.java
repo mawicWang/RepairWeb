@@ -1,67 +1,99 @@
 package com.duofuen.repair.service;
 
-import com.duofuen.repair.domain.UserRepository;
-import com.duofuen.repair.domain.ValCodeRepository;
-import com.duofuen.repair.domain.User;
-import com.duofuen.repair.domain.ValCode;
+import com.duofuen.repair.domain.*;
+import com.duofuen.repair.domain.Character;
 import com.duofuen.repair.rest.RbLogin;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.id.GUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class LoginService {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final UserRepository userRepository;
+    private final CharacterRepository characterRepository;
     private final ValCodeRepository valCodeRepository;
+    private final RestTokenRepository restTokenRepository;
 
     @Autowired
-    public LoginService(UserRepository userRepository, ValCodeRepository valCodeRepository) {
-        this.userRepository = userRepository;
+    public LoginService(CharacterRepository characterRepository, ValCodeRepository valCodeRepository, RestTokenRepository restTokenRepository) {
+        this.characterRepository = characterRepository;
         this.valCodeRepository = valCodeRepository;
+        this.restTokenRepository = restTokenRepository;
     }
 
     @Transactional
     public RbLogin loginByPhoneNum(String phoneNum, String pwd, String openId) {
         RbLogin rbLogin = null;
-        User user = userRepository.findByPhoneNum(phoneNum);
+        Character character = characterRepository.findByPhoneNum(phoneNum);
         ValCode validateCode = valCodeRepository.findByPhoneNum(phoneNum);
-        if (null != user && null != validateCode
+        if (null != character && null != validateCode
                 // validate code should be used in 5 minutes
                 && Duration.between(validateCode.getCreateTime().toInstant(), Instant.now()).getSeconds() < 300
                 && validateCode.getCode().equals(pwd)) {
             LOGGER.info("phone number {} matches validate code, previous openId is {}, current is {}, bind success",
-                    phoneNum, user.getOpenId(), openId);
-            user.setOpenId(openId);
-            userRepository.save(user);
-            rbLogin = new RbLogin(user.getRoleCode(), user.getId().toString());
+                    phoneNum, character.getOpenId(), openId);
+            character.setOpenId(openId);
+            characterRepository.save(character);
+
+            rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
+            rbLogin.setRoleCode(updateToken(character.getId()));        // update token
         }
         return rbLogin;
     }
 
     public RbLogin loginByOpenId(String openId) {
-        User user = userRepository.findByOpenId(openId);
-        if (null != user) {
+        Character character = characterRepository.findByOpenId(openId);
+        if (null != character) {
             LOGGER.info("openid {} login successful", openId);
-            return new RbLogin(user.getRoleCode(), user.getId().toString());
+            RbLogin rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
+            rbLogin.setToken(updateToken(character.getId()));     // update token
+            return rbLogin;
         }
         LOGGER.info("openid {} login fail", openId);
         return null;
     }
 
+    @Transactional
+    protected String updateToken(Integer characterId) {
+        Date expireTime = Date.from(Instant.now().plusSeconds(1800));
+        RestToken restToken = restTokenRepository.findByCharacterId(characterId);
+        if (null != restToken) {
+            // if not expire, update expireTime
+            // if expired, generate new token and update expireTime
+            if (Instant.now().isAfter(restToken.getExpireTime().toInstant())) {
+                String token = Base64Utils.encodeToString(UUID.randomUUID().toString().getBytes());
+                restToken.setToken(token);
+            }
+            restToken.setExpireTime(expireTime);
+        } else {
+            restToken = new RestToken();
+            restToken.setCharacterId(characterId);
+            restToken.setToken(Base64Utils.encodeToString(UUID.randomUUID().toString().getBytes()));
+            restToken.setExpireTime(expireTime);
+        }
+        LOGGER.info("rest token updated character id {}, token {}， expireTime {}", characterId, restToken.getToken(), expireTime);
+        restTokenRepository.save(restToken);
+        return restToken.getToken();
+    }
+
+
     public boolean checkPhoneNumExists(String phoneNum) {
-        User u = userRepository.findByPhoneNum(phoneNum);
-        return null != u;
+        Character character = characterRepository.findByPhoneNum(phoneNum);
+        return null != character;
     }
 
     public boolean sendValidateCode(String phoneNum) {

@@ -1,6 +1,8 @@
 package com.duofuen.repair.util;
 
 import com.alibaba.fastjson.JSON;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,6 +16,9 @@ import java.net.URL;
  * @Description:HTTP 请求
  */
 public class ChuangLanSmsUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
 
     // 请登录zz.253.com 获取创蓝API账号(非登录账号,示例:N1234567)
     private static final String account = "N9718791";
@@ -30,13 +35,13 @@ public class ChuangLanSmsUtil {
 
         SmsSendRequest smsSingleRequest = new SmsSendRequest(account, password, msg, phoneNum, report);
         String requestJson = JSON.toJSONString(smsSingleRequest);
-        System.out.println("before request string is: " + requestJson);
+        LOGGER.info("before request string is: " + requestJson);
 
         String response = sendSmsByPost(smsSingleRequestServerUrl, requestJson);
-        System.out.println("response after request result is :" + response);
+        LOGGER.info("response after request result is :" + response);
 
         SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
-        System.out.println("response  toString is :" + smsSingleResponse);
+        LOGGER.info("response  toString is :" + smsSingleResponse);
     }
 
 
@@ -69,7 +74,7 @@ public class ChuangLanSmsUtil {
                 // 开始获取数据
                 BufferedReader br = new BufferedReader(
                         new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
-                String line = null;
+                String line;
                 while ((line = br.readLine()) != null) {
                     sb.append(line);
                 }
