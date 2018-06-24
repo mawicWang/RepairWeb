@@ -6,21 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class HomeController {
+public class CharacterController {
 
     private final CharacterRepository characterRepository;
 
     @Autowired
-    public HomeController(CharacterRepository characterRepository) {
+    public CharacterController(CharacterRepository characterRepository) {
         this.characterRepository = characterRepository;
     }
 
-    @GetMapping("/listUser")
-    public String greeting(Model model) {
-        Iterable<Character> listUser = characterRepository.findAll();
-        model.addAttribute("listUser", listUser);
-        return "listUser";
+    @GetMapping("/listCharacter")
+    public String greeting(@RequestParam(name = "r") String roleCode, Model model) {
+        Iterable<Character> listCharacter = characterRepository.findAllByRoleCode(roleCode);
+        model.addAttribute("listCharacter", listCharacter);
+        return "listCharacter";
     }
 }

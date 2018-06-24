@@ -61,7 +61,7 @@ public class LoginController {
             baseResponse = BaseResponse.fail("empty parameter phoneNum/pwd/openId");
         } else {
             RbLogin rbLogin = loginService.loginByPhoneNum(phoneNum, pwd, openId);
-            baseResponse = packResultBody(rbLogin, "no phoneNum or pwd wrong");
+            baseResponse = BaseResponse.packResultBody(rbLogin, "no phoneNum or pwd wrong");
         }
         return baseResponse;
 
@@ -77,16 +77,9 @@ public class LoginController {
             baseResponse = BaseResponse.fail("empty parameter openId");
         } else {
             RbLogin rbLogin = loginService.loginByOpenId(openId);
-            baseResponse = packResultBody(rbLogin, "invalid openId");
+            baseResponse = BaseResponse.packResultBody(rbLogin, "invalid openId");
         }
         return baseResponse;
     }
 
-    private <R extends BaseResultBody> BaseResponse<R> packResultBody(R rb, String nullMsg) {
-        if (rb == null) {
-            return BaseResponse.fail(nullMsg);
-        } else {
-            return BaseResponse.success(rb);
-        }
-    }
 }

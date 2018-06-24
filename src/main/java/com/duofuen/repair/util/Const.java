@@ -16,6 +16,16 @@ public final class Const {
         public static final String LOGIN_PHONENUM = "phoneNum";
         public static final String LOGIN_PASSWORD = "pwd";
         public static final String LOGIN_OPEN_ID = "openId";
+
+    }
+
+    public final class Wx {
+        public static final String APP_ID = "wxa691be29e7554dcc";
+        public static final String SECRET = "19f042bcce790a9fd71e9174651e5a06";
+
+
+        public static final String ACCESS_TOKEN = "access_token";
+        public static final String JSAPI_TICKET = "jsapi_ticket";
     }
 
 }

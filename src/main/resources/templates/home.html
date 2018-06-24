@@ -398,7 +398,7 @@
 
                         <!-- second level item -->
                         <li>
-                            <a data-url="listUser" href="#listUser">
+                            <a data-url="todo" href="#todo">
                                 <i class="menu-icon fa fa-caret-right"></i>
                                 后台用户管理
                             </a>
@@ -407,7 +407,7 @@
 
                         <!-- second level item -->
                         <li>
-                            <a data-url="todo" href="#todo">
+                            <a data-url="listCharacter?r=00" href="#listCharacter?r=00">
                                 <i class="menu-icon fa fa-caret-right"></i>
                                 区域经理管理
                             </a>
@@ -416,7 +416,7 @@
 
                         <!-- second level item -->
                         <li>
-                            <a data-url="todo" href="#todo">
+                            <a data-url="listCharacter?r=01" href="#listCharacter?r=01">
                                 <i class="menu-icon fa fa-caret-right"></i>
                                 维修师傅管理
                             </a>
@@ -424,7 +424,7 @@
                         </li>
 
                         <!-- second level item -->
-                        <li>
+                        <li sec:authorize="hasRole('ADMIN')">
                             <a href="#" class="dropdown-toggle">
                                 <i class="menu-icon fa fa-caret-right"></i>
                                 dropdown
@@ -497,7 +497,8 @@
     <script th:src="@{/js/bootstrap.js}"></script>
 
     <!--Plugin-->
-    <script th:src="@{/js/jqGrid/jquery.jqGrid.js}"></script>
+    <script th:src="@{/js/dataTables/jquery.dataTables.js}"></script>
+    <script th:src="@{/js/dataTables/jquery.dataTables.bootstrap.js}"></script>
 
     <script th:src="@{/js/ace.js}"></script>
 

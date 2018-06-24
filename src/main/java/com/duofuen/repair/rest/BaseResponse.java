@@ -35,6 +35,14 @@ public class BaseResponse<RB extends BaseResultBody> {
         return new BaseResponse<>(FAIL, failMsg);
     }
 
+    public static  <R extends BaseResultBody> BaseResponse<R> packResultBody(R rb, String nullMsg) {
+        if (rb == null) {
+            return BaseResponse.fail(nullMsg);
+        } else {
+            return BaseResponse.success(rb);
+        }
+    }
+
     public String getResultMessage() {
         return resultMessage;
     }
