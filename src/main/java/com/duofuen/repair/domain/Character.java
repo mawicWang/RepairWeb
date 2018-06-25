@@ -1,5 +1,8 @@
 package com.duofuen.repair.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
 import javax.persistence.*;
 
 @Entity

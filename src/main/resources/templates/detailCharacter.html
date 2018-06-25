@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>--</title>
+</head>
+<body>
+    <form th:action="@{/saveCharacter}" class="form-horizontal" role="form" th:object="${character}">
+
+        <input type="hidden" name="id" th:field="*{id}">
+        <input type="hidden" name="roleCode" th:field="*{roleCode}">
+
+
+        <!-- #section:elements.form -->
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="name"> 姓名 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="name" name="username" class="col-xs-10 col-sm-8" th:field="*{username}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="phoneNum"> 手机号 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="phoneNum" name="phoneNum" class="col-xs-10 col-sm-8" th:field="*{phoneNum}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="roleCode"> 角色 </label>
+
+            <div class="col-sm-9">
+                <select id="roleCode" class="col-xs-5 col-sm-3" th:field="*{roleCode}" th:disabled="true">
+                    <option value="00">00 - 区域经理</option>
+                    <option value="01">01 - 维修师傅</option>
+                </select>
+            </div>
+        </div>
+
+    </form>
+</body>
+</html>

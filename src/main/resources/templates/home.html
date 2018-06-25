@@ -3,6 +3,11 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>维修系统控制台</title>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
@@ -499,6 +504,8 @@
     <!--Plugin-->
     <script th:src="@{/js/dataTables/jquery.dataTables.js}"></script>
     <script th:src="@{/js/dataTables/jquery.dataTables.bootstrap.js}"></script>
+    <script th:src="@{/js/bootbox.js}"></script>
+    <script th:src="@{/js/jquery.serializejson.js}"></script>
 
     <script th:src="@{/js/ace.js}"></script>
 

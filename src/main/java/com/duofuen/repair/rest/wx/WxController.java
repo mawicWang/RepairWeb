@@ -2,7 +2,6 @@ package com.duofuen.repair.rest.wx;
 
 import com.alibaba.fastjson.JSON;
 import com.duofuen.repair.rest.BaseResponse;
-import com.duofuen.repair.rest.RbLogin;
 import com.duofuen.repair.util.Const;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
-import java.io.UnsupportedEncodingException;
 import java.rmi.UnexpectedException;
 import java.time.Duration;
 import java.time.Instant;
