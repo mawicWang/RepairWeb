@@ -3,14 +3,15 @@ package com.duofuen.repair.rest;
 import com.duofuen.repair.domain.Image;
 import com.duofuen.repair.domain.ImageRepository;
 import com.duofuen.repair.util.Const;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.BASE64Decoder;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,7 +59,7 @@ public class ImageController {
         } else {
             LOGGER.info("image size {}", imgEncode.length());
 
-            BASE64Decoder decoder = new BASE64Decoder();
+            Base64 decoder = new Base64();
             try {
                 //判断图片的格式
                 String data = "data:image";
@@ -72,7 +73,7 @@ public class ImageController {
                 imgEncode = imgEncode.substring(bIndex + 7);
 
                 //Base64解码
-                byte[] imgByte = decoder.decodeBuffer(imgEncode);
+                byte[] imgByte = decoder.decode(imgEncode);
                 for (int i = 0; i < imgByte.length; ++i) {
                     if (imgByte[i] < 0) {//调整异常数据
                         imgByte[i] += 256;

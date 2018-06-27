@@ -6,6 +6,8 @@ import com.duofuen.repair.domain.RestTokenRepository;
 import com.duofuen.repair.rest.BaseResponse;
 import com.duofuen.repair.rest.RbNull;
 import com.duofuen.repair.util.Const;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -35,6 +37,7 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
         this.restTokenRepository = restTokenRepository;
     }
 
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * fetch header "RestToken" from request
@@ -43,9 +46,16 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        LOGGER.info("=========== PREHANDLING rest request========");
+
+        if ("OPTIONS".equals(request.getMethod())) {
+            // cors 预请求放行
+            return true;
+        }
         String msg;
         // get token from request
         String token = request.getHeader(Const.Rest.HTTP_HEADER_TOKEN);
+        LOGGER.info("RestToken : {}", token);
 
         if (StringUtils.isEmpty(token)) {
             msg = "no header names \"RestToken\" is found!";

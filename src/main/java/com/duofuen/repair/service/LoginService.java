@@ -50,7 +50,7 @@ public class LoginService {
             characterRepository.save(character);
 
             rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
-            rbLogin.setRoleCode(updateToken(character.getId()));        // update token
+            rbLogin.setToken(updateToken(character.getId()));        // update token
         }
         return rbLogin;
     }
@@ -116,7 +116,7 @@ public class LoginService {
         valCodeRepository.save(valCode);
         LOGGER.info("phone number {} generated validate code {}", phoneNum, code);
 
-        // TODO send message validate time 300s
+        // send message validate time 300s
         ChuangLanSmsUtil.sendValidateCode(phoneNum, code);
         return true;
     }

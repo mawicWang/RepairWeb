@@ -67,7 +67,19 @@ task deploy(dependsOn:bootJar) {
             session(remotes.webServer) {
                 println 'start deploy'
                 put from: buildDir.toString() + '/libs/repairWeb-1.0-SNAPSHOT.jar', into: '/var/www/'
-                execute 'java -jar /var/www/repairWeb-1.0-SNAPSHOT.jar'
+                println 'deploy done'
+                println 'start web'
+                execute '/var/www/boot.sh restart'
+            }
+        }
+    }
+}
+
+task start() {
+    doLast {
+        ssh.run {
+            session(remotes.webServer) {
+                execute '/var/www/boot.sh start'
             }
         }
     }

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
@@ -30,7 +32,7 @@ public class LoginController {
 
     @PostMapping(path = "/getValidateCode")
     public BaseResponse<RbNull> getValidateCode(@RequestBody HashMap<String, String> map) {
-        LOGGER.info("==>restful method loginByOpenId called, parameter: " + map);
+        LOGGER.info("==>restful method getValidateCode called, parameter: " + map);
         BaseResponse<RbNull> baseResponse;
 
         String phoneNum = map.get(Const.Rest.LOGIN_PHONENUM);
