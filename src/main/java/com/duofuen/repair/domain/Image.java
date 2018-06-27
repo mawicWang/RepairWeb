@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class Image {
@@ -15,6 +16,8 @@ public class Image {
     private String imageType;
 
     private byte[] imageContent;
+
+    private Date createTime;
 
     public Integer getId() {
         return id;
@@ -38,5 +41,13 @@ public class Image {
 
     public void setImageContent(byte[] imageContent) {
         this.imageContent = imageContent;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

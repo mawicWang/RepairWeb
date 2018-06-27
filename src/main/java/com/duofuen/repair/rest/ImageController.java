@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -90,6 +92,7 @@ public class ImageController {
                 Image image = new Image();
                 image.setImageType(imageType);
                 image.setImageContent(imgByte);
+                image.setCreateTime(Date.from(Instant.now()));
                 imageRepository.save(image);
             } catch (Exception ignored) {
             }
