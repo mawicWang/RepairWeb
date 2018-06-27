@@ -1,9 +1,6 @@
 package com.duofuen.repair.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Store {
@@ -11,9 +8,20 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    @Column(name = "addr1_id")
     private Integer addr1Id;
+    @Column(name = "addr2_id")
     private Integer addr2Id;
     private String addr3;
+    @Transient
+    private String completeAddr;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "addr1_id", insertable = false, updatable = false)
+    private Address1 address1;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "addr2_id", insertable = false, updatable = false)
+    private Address2 address2;
 
     public Integer getId() {
         return id;
@@ -53,5 +61,29 @@ public class Store {
 
     public void setAddr3(String addr3) {
         this.addr3 = addr3;
+    }
+
+    public String getCompleteAddr() {
+        return new StringBuilder().append(address1.getValue()).append(address2.getValue()).append(addr3).toString();
+    }
+
+    public void setCompleteAddr(String completeAddr) {
+        this.completeAddr = completeAddr;
+    }
+
+    public Address1 getAddress1() {
+        return address1;
+    }
+
+    public void setAddress1(Address1 address1) {
+        this.address1 = address1;
+    }
+
+    public Address2 getAddress2() {
+        return address2;
+    }
+
+    public void setAddress2(Address2 address2) {
+        this.address2 = address2;
     }
 }

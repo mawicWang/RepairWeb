@@ -4,6 +4,14 @@ public final class Const {
 
     public static final String MSG_PREFIX = "【253云通讯】，你的验证码是";
 
+    public static final String ROLE_CODE_MANAGER = "00";
+    public static final String ROLE_CODE_REPAIRMAN = "01";
+
+    public static final String ORDER_STATE_OPEN = "00";
+    public static final String ORDER_STATE_FINISH = "01";
+    public static final Integer ORDER_PER_PAGE = 10;
+
+
     public final class Rest {
         public static final String ROOT_PATH = "/rest";
 

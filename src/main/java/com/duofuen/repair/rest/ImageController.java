@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
@@ -51,6 +52,7 @@ public class ImageController {
         stream.close();
     }
 
+    @Transactional
     @PostMapping(value = "/uploadImage")
     public BaseResponse<RbImage> uploadImage(@RequestBody Map<String, String> map) {
         LOGGER.info("==>restful method uploadImage called");

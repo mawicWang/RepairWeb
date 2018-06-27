@@ -8,6 +8,14 @@ public class OrderImagePK implements Serializable {
     private Integer orderId;
     private Integer imageId;
 
+    public OrderImagePK() {
+    }
+
+    public OrderImagePK(Integer orderId, Integer imageId) {
+        this.orderId = orderId;
+        this.imageId = imageId;
+    }
+
     public Integer getOrderId() {
         return orderId;
     }

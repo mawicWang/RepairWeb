@@ -10,6 +10,10 @@ public class RbOrderId  extends BaseResultBody {
         return orderId;
     }
 
+    public RbOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }

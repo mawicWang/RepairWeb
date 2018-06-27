@@ -1,11 +1,13 @@
 package com.duofuen.repair.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
 public class CharaAddr2PK implements Serializable {
     private Integer characterId;
+    @Column(name = "addr2_id")
     private Integer addr2Id;
 
     public Integer getCharacterId() {

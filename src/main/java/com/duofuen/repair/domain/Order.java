@@ -1,12 +1,10 @@
 package com.duofuen.repair.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "order_")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +13,7 @@ public class Order {
     private Integer managerId;
     private Integer repairmanId;
     private String title;
+    @Column(name = "descp")
     private String desc;
     private String orderState;
     private Date createTime;

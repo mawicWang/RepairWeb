@@ -1,20 +1,25 @@
 package com.duofuen.repair.rest.order;
 
 import com.alibaba.fastjson.JSON;
+import com.duofuen.repair.domain.Character;
+import com.duofuen.repair.domain.*;
 import com.duofuen.repair.rest.BaseResponse;
 import com.duofuen.repair.rest.RbNull;
 import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 import static com.duofuen.repair.util.Const.Rest.*;
 
@@ -24,81 +29,148 @@ import static com.duofuen.repair.util.Const.Rest.*;
 public class OrderController {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final StoreRepository storeRepository;
+    private final CharacterRepository characterRepository;
+    private final OrderRepository orderRepository;
+    private final OrderImageRepository orderImageRepository;
+
+    @Autowired
+    public OrderController(StoreRepository storeRepository, CharacterRepository characterRepository, OrderRepository orderRepository, OrderImageRepository orderImageRepository) {
+        this.storeRepository = storeRepository;
+        this.characterRepository = characterRepository;
+        this.orderRepository = orderRepository;
+        this.orderImageRepository = orderImageRepository;
+    }
+
+    @Transactional
     @PostMapping("/submitOrder")
     public BaseResponse<RbOrderId> submitOrder(@RequestBody @Valid SubmitOrderRequest soRequest) {
         LOGGER.info("==>restful method submitOrder called, parameter: {}", JSON.toJSONString(soRequest));
-//TODO
-        RbOrderId rbOrderId = new RbOrderId();
-        rbOrderId.setOrderId(soRequest.getManagerId() + soRequest.getStoreId());
-        return BaseResponse.success(rbOrderId);
+
+        BaseResponse<RbOrderId> baseResponse;
+
+        Optional<Character> character = characterRepository.findById(soRequest.getManagerId());
+        if (!character.isPresent() || !character.get().getRoleCode().equals(Const.ROLE_CODE_MANAGER)) {
+            baseResponse = BaseResponse.fail("you must be a MANAGER");
+        } else if (!storeRepository.findById(soRequest.getStoreId()).isPresent()) {
+            baseResponse = BaseResponse.fail("invalid store id :" + soRequest.getStoreId());
+        } else {
+            Character repairman = characterRepository.findByStoreIdAndRoleCode(soRequest.getStoreId(), Const.ROLE_CODE_REPAIRMAN);
+            if (repairman == null) {
+                // TODO 发送短信给客服配师傅
+//                return BaseResponse.fail("not repairman matches for store id : " + soRequest.getStoreId());
+            }
+
+            // save order
+            Order order = new Order();
+            order.setManagerId(soRequest.getManagerId());
+            order.setStoreId(soRequest.getStoreId());
+            order.setTitle(soRequest.getTitle());
+            order.setDesc(soRequest.getDesc());
+            order.setOrderState(Const.ORDER_STATE_OPEN);
+            order.setCreateTime(Date.from(Instant.now()));
+            order.setRepairmanId(repairman.getId());
+            orderRepository.save(order);
+
+            //save image
+            for (Integer imgId : soRequest.getImgs()) {
+                OrderImage orderImage = new OrderImage();
+                orderImage.setId(new OrderImagePK(order.getId(), imgId));
+                orderImageRepository.save(orderImage);
+            }
+            RbOrderId rbOrderId = new RbOrderId(order.getId());
+            baseResponse = BaseResponse.success(rbOrderId);
+        }
+
+        return baseResponse;
     }
 
     @GetMapping("/getOrderList")
-    public BaseResponse<RbOrderList> getOrderList(@NotEmpty(message = "userId must not be empty") @RequestParam(name = Const.Rest.ORDER_USER_ID) String userId,
-                                                  @NotNull @RequestParam(name = Const.Rest.ORDER_STEP) Integer step) {
+    public BaseResponse<RbOrderList> getOrderList(@NotNull(message = "userId must not be null") @RequestParam(name = Const.Rest.ORDER_USER_ID) Integer userId,
+                                                  @NotNull(message = "step must not be null") @RequestParam(name = Const.Rest.ORDER_STEP) Integer step) {
         LOGGER.info("==>restful method getOrderList called, userId: {}, step: {}", userId, step);
 
         BaseResponse<RbOrderList> baseResponse;
 
-        //TODO
+        Optional<Character> character = characterRepository.findById(userId);
+        if (!character.isPresent()) {
+            return BaseResponse.fail("not invalid userid " + userId);
+        }
+
+        Page<Order> orders;
+        if (character.get().getRoleCode().equals(Const.ROLE_CODE_MANAGER)) {
+            orders = orderRepository.findAllByManagerId(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
+        } else {
+            orders = orderRepository.findAllByRepairmanId(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
+        }
+
         RbOrderList rbOrderList = new RbOrderList();
         List<RbOrderList.Order> orderList = new ArrayList<>();
-        RbOrderList.Order order1 = rbOrderList.giveNewOrder();
-        order1.setOrderId(1);
-        order1.setStoreId(2);
-        order1.setStoreName("测试1");
-        order1.setStoreAddr("南京西路");
-        order1.setManagerId(1);
-        order1.setRepairmanId(4);
-        order1.setTitle("坏掉了");
-        order1.setOrderState("00");
-        order1.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        for (Order o : orders) {
+            RbOrderList.Order order = rbOrderList.giveNewOrder();
+            order.setOrderId(o.getId());
 
-        RbOrderList.Order order2 = rbOrderList.giveNewOrder();
-        order2.setOrderId(2);
-        order2.setStoreId(3);
-        order2.setStoreName("测试2");
-        order2.setStoreAddr("人民广场");
-        order2.setManagerId(1);
-        order2.setRepairmanId(4);
-        order2.setTitle("又坏掉了");
-        order2.setOrderState("01");
-        order2.setCreateTime(String.valueOf(System.currentTimeMillis()));
+            Store store = storeRepository.findById(o.getStoreId()).get();
+            order.setStoreId(store.getId());
+            order.setStoreName(store.getName());
+            order.setStoreAddr(store.getCompleteAddr());
 
-        orderList.add(order1);
-        orderList.add(order2);
+            order.setManagerId(o.getManagerId());
+            order.setRepairmanId(o.getRepairmanId());
+            order.setTitle(o.getTitle());
+            order.setOrderState(o.getOrderState());
+            order.setCreateTime(String.valueOf(o.getCreateTime().getTime()));
+
+            orderList.add(order);
+        }
+
         rbOrderList.setOrderList(orderList);
-
         baseResponse = BaseResponse.success(rbOrderList);
 
         return baseResponse;
     }
 
     @GetMapping("/getDetailOrder")
-    public BaseResponse<RbDetailOrder> getDetailOrder(@RequestParam(name = Const.Rest.ORDER_USER_ID) Integer userId,
-                                                      @RequestParam(name = Const.Rest.ORDER_ORDER_ID) Integer orderId) {
+    public BaseResponse<RbDetailOrder> getDetailOrder(@NotNull(message = "userId must not be null") @RequestParam(name = Const.Rest.ORDER_USER_ID) Integer userId,
+                                                      @NotNull(message = "orderId must not be null") @RequestParam(name = Const.Rest.ORDER_ORDER_ID) Integer orderId) {
         LOGGER.info("==>restful method getDetailOrder called, userId: {}, orderId: {}", userId, orderId);
         //TODO
         BaseResponse<RbDetailOrder> baseResponse;
 
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (!orderOptional.isPresent()) {
+            return BaseResponse.fail("not invalid order id : " + orderId);
+        }
+        Order order = orderOptional.get();
+
         RbDetailOrder detailOrder = new RbDetailOrder();
-        detailOrder.setOrderId(Integer.valueOf(orderId));
-        detailOrder.setStoreId(1);
-        detailOrder.setStoreName("南京西路店");
-        detailOrder.setStoreAddr("南京西路");
+        detailOrder.setOrderId(order.getId());
+
+        Store store = storeRepository.findById(order.getStoreId()).get();
+        detailOrder.setStoreId(store.getId());
+        detailOrder.setStoreName(store.getName());
+        detailOrder.setStoreAddr(store.getCompleteAddr());
         detailOrder.setManagerId(Integer.valueOf(userId));
-        detailOrder.setRepairmanId(4);
-        detailOrder.setRepairmanPhoneNum("13817999999");
-        detailOrder.setTitle("坏掉了");
-        detailOrder.setDesc("描述坏掉了");
-        detailOrder.setOrderState("00");
-        detailOrder.setCreateTime("1529939375013");
-        detailOrder.setFinishTime("1529939575013");
+
+        Character repairman = characterRepository.findById(order.getRepairmanId()).get();
+        detailOrder.setRepairmanId(repairman.getId());
+        detailOrder.setRepairmanName(repairman.getUsername());
+        detailOrder.setRepairmanPhoneNum(repairman.getPhoneNum());
+
+        detailOrder.setTitle(order.getTitle());
+        detailOrder.setDesc(order.getDesc());
+        detailOrder.setOrderState(order.getOrderState());
+        detailOrder.setCreateTime(dateToTimestamp(order.getCreateTime()));
+        detailOrder.setFinishTime(dateToTimestamp(order.getFinishTime()));
+
+        List<OrderImage> orderImages = orderImageRepository.findAllById_OrderId(orderId);
         List<RbDetailOrder.Img> imgs = new ArrayList<>();
-        RbDetailOrder.Img img = detailOrder.giveOneImg();
-        img.setImageId(1);
-        img.setImgUrl("//undefined");
-        imgs.add(img);
+        for (OrderImage orderImage : orderImages) {
+            RbDetailOrder.Img img = detailOrder.giveOneImg();
+            img.setImageId(orderImage.getId().getImageId());
+            img.setImgUrl(ROOT_PATH + "/viewImage?id=" + orderImage.getId().getImageId());
+            imgs.add(img);
+        }
         detailOrder.setImgs(imgs);
 
         baseResponse = BaseResponse.success(detailOrder);
@@ -106,13 +178,40 @@ public class OrderController {
         return baseResponse;
     }
 
+    @Transactional
     @PostMapping("/completeOrder")
     public BaseResponse<RbNull> completeOrder(@RequestBody Map<String, String> map) {
         LOGGER.info("==>restful method completeOrder called, param: {}", map);
         String userId = map.get(ORDER_USER_ID);
         String orderId = map.get(ORDER_ORDER_ID);
 
-// TODO
-        return BaseResponse.success(new RbNull());
+        BaseResponse<RbNull> response;
+
+        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(orderId)) {
+            return BaseResponse.fail("empty param userId/orderId");
+        }
+        Optional<Character> character = characterRepository.findById(Integer.valueOf(userId));
+        if (!character.isPresent() || !character.get().getRoleCode().equals(Const.ROLE_CODE_REPAIRMAN)) {
+            response = BaseResponse.fail("you must be a repair man");
+        } else {
+            Optional<Order> orderOptional = orderRepository.findById(Integer.valueOf(orderId));
+            if (!orderOptional.isPresent()) {
+                response = BaseResponse.fail("not validate orderId : " + orderId);
+            } else if (!orderOptional.get().getRepairmanId().toString().equals(userId)) {
+                response = BaseResponse.fail("you are not responsible for this order");
+            } else {
+                Order order = orderOptional.get();
+                order.setOrderState(Const.ORDER_STATE_FINISH);
+                order.setFinishTime(new Date());
+                orderRepository.save(order);
+                response = BaseResponse.success(new RbNull());
+            }
+        }
+
+        return response;
+    }
+
+    private String dateToTimestamp(Date date) {
+        return null == date ? null : String.valueOf(date.getTime());
     }
 }

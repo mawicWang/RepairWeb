@@ -40,6 +40,7 @@ public class LoginController {
             baseResponse = BaseResponse.fail("invalid phone number");
         } else {
             boolean sent = loginService.sendValidateCode(phoneNum);
+            // TODO 添加 result code 02 表示5分钟内重复发送
             if (sent) {
                 baseResponse = BaseResponse.success(new RbNull());
             } else {

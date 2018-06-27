@@ -1,5 +1,6 @@
 package com.duofuen.repair.rest.order;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -11,6 +12,7 @@ public class SubmitOrderRequest {
     private Integer storeId;
     @NotEmpty(message = "title must not be empty")
     private String title;
+    @Column(name="'desc'")
     private String desc;
     private List<Integer> imgs;
 
