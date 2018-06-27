@@ -22,7 +22,7 @@ public class StoreController {
         LOGGER.info("====>restful method getStoreList called, userId {}", userId);
 
         BaseResponse<RbStoreList> baseResponse;
-
+        //TODO
         RbStoreList rbStoreList = new RbStoreList();
         RbStoreList.Store store1 = rbStoreList.giveOneStore();
         store1.setStoreId(1);

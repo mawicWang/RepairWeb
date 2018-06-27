@@ -33,6 +33,8 @@ public class ImageController {
 
     @GetMapping(value = "/viewImage")
     public void viewImage(Integer id, HttpServletResponse response) throws IOException {
+        LOGGER.info("==>restful method viewImage called, id: {}", id);
+
         Optional<Image> image = imageRepository.findById(id);
         if (!image.isPresent()) {
             response.setStatus(404);

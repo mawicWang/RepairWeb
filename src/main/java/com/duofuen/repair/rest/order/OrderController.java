@@ -2,6 +2,7 @@ package com.duofuen.repair.rest.order;
 
 import com.alibaba.fastjson.JSON;
 import com.duofuen.repair.rest.BaseResponse;
+import com.duofuen.repair.rest.RbNull;
 import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,8 +14,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
+import static com.duofuen.repair.util.Const.Rest.*;
 
 @RestController
 @RequestMapping(path = ROOT_PATH)
@@ -23,11 +25,11 @@ public class OrderController {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @PostMapping("/submitOrder")
-    public BaseResponse<RbOrderId> submitOrder(@RequestBody @Valid SubmitOrderRequest request) {
-        LOGGER.info("==>restful method submitOrder called, parameter: {}", JSON.toJSONString(request));
+    public BaseResponse<RbOrderId> submitOrder(@RequestBody @Valid SubmitOrderRequest soRequest) {
+        LOGGER.info("==>restful method submitOrder called, parameter: {}", JSON.toJSONString(soRequest));
 //TODO
         RbOrderId rbOrderId = new RbOrderId();
-        rbOrderId.setOrderId(request.getManagerId() + request.getStoreId());
+        rbOrderId.setOrderId(soRequest.getManagerId() + soRequest.getStoreId());
         return BaseResponse.success(rbOrderId);
     }
 
@@ -76,7 +78,7 @@ public class OrderController {
     public BaseResponse<RbDetailOrder> getDetailOrder(@RequestParam(name = Const.Rest.ORDER_USER_ID) Integer userId,
                                                       @RequestParam(name = Const.Rest.ORDER_ORDER_ID) Integer orderId) {
         LOGGER.info("==>restful method getDetailOrder called, userId: {}, orderId: {}", userId, orderId);
-
+        //TODO
         BaseResponse<RbDetailOrder> baseResponse;
 
         RbDetailOrder detailOrder = new RbDetailOrder();
@@ -102,5 +104,15 @@ public class OrderController {
         baseResponse = BaseResponse.success(detailOrder);
 
         return baseResponse;
+    }
+
+    @PostMapping("/completeOrder")
+    public BaseResponse<RbNull> completeOrder(@RequestBody Map<String, String> map) {
+        LOGGER.info("==>restful method completeOrder called, param: {}", map);
+        String userId = map.get(ORDER_USER_ID);
+        String orderId = map.get(ORDER_ORDER_ID);
+
+// TODO
+        return BaseResponse.success(new RbNull());
     }
 }

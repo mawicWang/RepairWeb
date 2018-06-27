@@ -21,6 +21,10 @@ public final class Const {
         public static final String ORDER_STEP = "step";
         public static final String ORDER_ORDER_ID = "orderId";
 
+        public static final String NOTE_USER_ID = "userId";
+        public static final String NOTE_ORDER_ID = "orderId";
+        public static final String NOTE_CONTENT = "content";
+
         public static final String IMG = "img";
 
     }
