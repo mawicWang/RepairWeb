@@ -1,8 +1,14 @@
 package com.duofuen.repair.rest;
 
+import com.alibaba.fastjson.JSON;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import static com.duofuen.repair.util.Const.Rest.*;
 
 public class BaseResponse<RB extends BaseResultBody> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // success - null ; fail - reason;
     private String resultMessage;
@@ -28,14 +34,16 @@ public class BaseResponse<RB extends BaseResultBody> {
     }
 
     public static <R extends BaseResultBody> BaseResponse<R> success(R result) {
+        LOGGER.info("===>restful method called succeeded, {}", JSON.toJSONString(result));
         return new BaseResponse<>(result);
     }
 
     public static <R extends BaseResultBody> BaseResponse<R> fail(String failMsg) {
+        LOGGER.info("===>restful method called fail! Reason: {}", failMsg);
         return new BaseResponse<>(FAIL, failMsg);
     }
 
-    public static  <R extends BaseResultBody> BaseResponse<R> packResultBody(R rb, String nullMsg) {
+    public static <R extends BaseResultBody> BaseResponse<R> packResultBody(R rb, String nullMsg) {
         if (rb == null) {
             return BaseResponse.fail(nullMsg);
         } else {

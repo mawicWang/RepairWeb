@@ -46,20 +46,23 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        LOGGER.info("=========== PREHANDLING rest request========");
+        LOGGER.info("=========== PRE-HANDLING rest request========");
 
         if ("OPTIONS".equals(request.getMethod())) {
             // cors 预请求放行
+            LOGGER.info("request method is an OPTIONS, do no check!");
             return true;
         }
         String msg;
         // get token from request
         String token = request.getHeader(Const.Rest.HTTP_HEADER_TOKEN);
         LOGGER.info("RestToken : {}", token);
+
         if ("testtoken123".equals(token)) {
+            // TODO debug
+            LOGGER.info("Good Token!(FOR DEBUG)");
             return true;
         }
-
 
         if (StringUtils.isEmpty(token)) {
             msg = "no header names \"RestToken\" is found!";
@@ -72,6 +75,7 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
                 // check token active
                 msg = "token expired, please login again";
             } else {
+                LOGGER.info("Good Token!");
                 return true;
             }
         }

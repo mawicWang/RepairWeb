@@ -190,22 +190,25 @@ public class OrderController {
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(orderId)) {
             return BaseResponse.fail("empty param userId/orderId");
         }
+
         Optional<Character> character = characterRepository.findById(Integer.valueOf(userId));
         if (!character.isPresent() || !character.get().getRoleCode().equals(Const.ROLE_CODE_REPAIRMAN)) {
-            response = BaseResponse.fail("you must be a repair man");
+            return BaseResponse.fail("you must be a repair man");
+        }
+
+        Optional<Order> orderOptional = orderRepository.findById(Integer.valueOf(orderId));
+        if (!orderOptional.isPresent()) {
+            response = BaseResponse.fail("not validate orderId : " + orderId);
+        } else if (!orderOptional.get().getRepairmanId().toString().equals(userId)) {
+            response = BaseResponse.fail("you are not responsible for this order");
+        } else if (orderOptional.get().getOrderState().equals(Const.ORDER_STATE_FINISH)) {
+            response = BaseResponse.fail("this order is already finished");
         } else {
-            Optional<Order> orderOptional = orderRepository.findById(Integer.valueOf(orderId));
-            if (!orderOptional.isPresent()) {
-                response = BaseResponse.fail("not validate orderId : " + orderId);
-            } else if (!orderOptional.get().getRepairmanId().toString().equals(userId)) {
-                response = BaseResponse.fail("you are not responsible for this order");
-            } else {
-                Order order = orderOptional.get();
-                order.setOrderState(Const.ORDER_STATE_FINISH);
-                order.setFinishTime(new Date());
-                orderRepository.save(order);
-                response = BaseResponse.success(new RbNull());
-            }
+            Order order = orderOptional.get();
+            order.setOrderState(Const.ORDER_STATE_FINISH);
+            order.setFinishTime(new Date());
+            orderRepository.save(order);
+            response = BaseResponse.success(new RbNull());
         }
 
         return response;
