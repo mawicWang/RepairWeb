@@ -167,7 +167,7 @@ public class OrderController {
         List<RbDetailOrder.Img> imgs = new ArrayList<>();
         for (OrderImage orderImage : orderImages) {
             RbDetailOrder.Img img = detailOrder.giveOneImg();
-            img.setImageId(orderImage.getId().getImageId());
+            img.setImgId(orderImage.getId().getImageId());
             img.setImgUrl(ROOT_PATH + "/viewImage?id=" + orderImage.getId().getImageId());
             imgs.add(img);
         }

@@ -39,12 +39,19 @@ public class LoginController {
         } else if (!loginService.checkPhoneNumExists(phoneNum)) {
             baseResponse = BaseResponse.fail("invalid phone number");
         } else {
-            boolean sent = loginService.sendValidateCode(phoneNum);
-            // TODO 添加 result code 02 表示5分钟内重复发送
-            if (sent) {
-                baseResponse = BaseResponse.success(new RbNull());
-            } else {
-                baseResponse = BaseResponse.fail("validate code sent fail");
+            try {
+                // 发送验证码，返回true表示成功发送，false表示5分钟内重复发送
+                // 其他失败由exception处理
+                boolean sent = loginService.sendValidateCode(phoneNum);
+                if (sent) {
+                    baseResponse = BaseResponse.success(new RbNull());
+                } else {
+                    baseResponse = new BaseResponse<>(Const.Rest.VARIFY_CODE_SENT_TOO_FREQUENT,
+                            "验证码5分钟内有效，请不要频繁操作。", null);
+                }
+            } catch (Throwable t) {
+                LOGGER.error(t);
+                baseResponse = BaseResponse.fail("短信发送失败");
             }
         }
         return baseResponse;

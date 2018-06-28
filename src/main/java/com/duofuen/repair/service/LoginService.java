@@ -1,14 +1,12 @@
 package com.duofuen.repair.service;
 
-import com.duofuen.repair.domain.*;
 import com.duofuen.repair.domain.Character;
+import com.duofuen.repair.domain.*;
 import com.duofuen.repair.rest.RbLogin;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.id.GUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
@@ -96,29 +94,43 @@ public class LoginService {
         return null != character;
     }
 
+
+    /**
+     * Send validate code string.
+     *
+     * @param phoneNum the phone num
+     * @return true if success
+     * false if sent too frequent (300s)
+     */
     public boolean sendValidateCode(String phoneNum) {
-        // if createtime < 300s
-        ValCode valCode = valCodeRepository.findByPhoneNum(phoneNum);
-        if (null != valCode && Duration.between(valCode.getCreateTime().toInstant(), Instant.now()).getSeconds() < 300) {
-            LOGGER.info("phone number {} already sent validate code in 5 minutes", phoneNum);
-            return false;
+        try {
+            // if createtime < 300s
+            ValCode valCode = valCodeRepository.findByPhoneNum(phoneNum);
+            if (null != valCode && Duration.between(valCode.getCreateTime().toInstant(), Instant.now()).getSeconds() < 300) {
+                LOGGER.info("phone number {} already sent validate code in 5 minutes", phoneNum);
+                return false;
+            }
+
+            // save phoneNum + validateCode + createTime
+            // cover if already exits
+            String code = getVerifyCode();
+            if (null == valCode) {
+                valCode = new ValCode();
+                valCode.setPhoneNum(phoneNum);
+            }
+            valCode.setCode(code);
+            valCode.setCreateTime(new Date());
+            valCodeRepository.save(valCode);
+            LOGGER.info("phone number {} generated validate code {}", phoneNum, code);
+
+            // send message validate time 300s
+            ChuangLanSmsUtil.sendValidateCode(phoneNum, code);
+            return true;
+        } catch (Exception e) {
+            LOGGER.error(e);
+            throw new RuntimeException("send validate code msg fail", e);
         }
 
-        // save phoneNum + validateCode + createTime
-        // cover if already exits
-        String code = getVerifyCode();
-        if (null == valCode) {
-            valCode = new ValCode();
-            valCode.setPhoneNum(phoneNum);
-        }
-        valCode.setCode(code);
-        valCode.setCreateTime(new Date());
-        valCodeRepository.save(valCode);
-        LOGGER.info("phone number {} generated validate code {}", phoneNum, code);
-
-        // send message validate time 300s
-        ChuangLanSmsUtil.sendValidateCode(phoneNum, code);
-        return true;
     }
 
     private String getVerifyCode() {

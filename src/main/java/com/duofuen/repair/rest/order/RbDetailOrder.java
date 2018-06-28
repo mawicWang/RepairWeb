@@ -139,16 +139,16 @@ public class RbDetailOrder extends BaseResultBody {
 
     public class Img {
 
-        private Integer imageId;
+        private Integer imgId;
 
         private String imgUrl;
 
-        public Integer getImageId() {
-            return imageId;
+        public Integer getImgId() {
+            return imgId;
         }
 
-        public void setImageId(Integer imageId) {
-            this.imageId = imageId;
+        public void setImgId(Integer imgId) {
+            this.imgId = imgId;
         }
 
         public String getImgUrl() {

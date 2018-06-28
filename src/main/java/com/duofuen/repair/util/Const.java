@@ -18,6 +18,8 @@ public final class Const {
         public static final String SUCCESS = "00";
         public static final String FAIL = "99";
         public static final String UNAUTHORIZED = "40";
+        public static final String VARIFY_CODE_SENT_TOO_FREQUENT = "01";
+
 
         public static final String HTTP_HEADER_TOKEN = "RestToken";
 
