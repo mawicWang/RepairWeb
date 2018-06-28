@@ -9,6 +9,7 @@ public class RbDetailOrder extends BaseResultBody {
     private Integer orderId;
     private Integer storeId;
     private String storeName;
+    private String storeTel;
     private String storeAddr;
     private Integer managerId;
     private Integer repairmanId;
@@ -47,6 +48,14 @@ public class RbDetailOrder extends BaseResultBody {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    public String getStoreTel() {
+        return storeTel;
+    }
+
+    public void setStoreTel(String storeTel) {
+        this.storeTel = storeTel;
     }
 
     public String getStoreAddr() {

@@ -149,6 +149,7 @@ public class OrderController {
         Store store = storeRepository.findById(order.getStoreId()).get();
         detailOrder.setStoreId(store.getId());
         detailOrder.setStoreName(store.getName());
+        detailOrder.setStoreTel(store.getTelephone());
         detailOrder.setStoreAddr(store.getCompleteAddr());
         detailOrder.setManagerId(Integer.valueOf(userId));
 

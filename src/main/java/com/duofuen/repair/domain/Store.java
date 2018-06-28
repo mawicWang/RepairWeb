@@ -8,6 +8,7 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String telephone;
     @Column(name = "addr1_id")
     private Integer addr1Id;
     @Column(name = "addr2_id")
@@ -37,6 +38,14 @@ public class Store {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public Integer getAddr1Id() {
