@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>--</title>
+</head>
+<body>
+<form th:action="@{/saveUser}" class="form-horizontal" role="form" th:object="${user}">
+
+    <input type="hidden" name="authority" th:field="*{role.authority}">
+
+    <!-- #section:elements.form -->
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="username"> 用户名 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="username" class="col-xs-10 col-sm-8" th:field="*{username}" th:readonly="*{username}?true:false"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="authority"> 角色 </label>
+
+        <div class="col-sm-9">
+            <select id="authority" class="col-xs-5 col-sm-3" th:field="*{role.authority}" th:disabled="true">
+                <option value="ROLE_ADMIN">管理员</option>
+                <option value="ROLE_USER">客服</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="name"> 姓名 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="name" class="col-xs-10 col-sm-8" th:field="*{name}"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="phoneNum"> 手机号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="phoneNum" class="col-xs-10 col-sm-8" th:field="*{phoneNum}"/>
+        </div>
+    </div>
+
+</form>
+</body>
+</html>

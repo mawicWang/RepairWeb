@@ -42,15 +42,17 @@ public class CharacterController {
 
     @Transactional
     @RequestMapping("saveCharacter")
+    @ResponseBody
     public String saveCharacter(@RequestBody Character character) {
         characterRepository.save(character);
-        return "listCharacter";
+        return "success";
     }
 
     @Transactional
     @RequestMapping("deleteCharacter")
+    @ResponseBody
     public String deleteCharacter(@RequestParam Integer id) {
         characterRepository.deleteById(id);
-        return "home";
+        return "删除成功！";
     }
 }

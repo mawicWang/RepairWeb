@@ -6,8 +6,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface OrderRepository extends PagingAndSortingRepository<Order, Integer> {
 
-    Page<Order> findAllByManagerId(Integer managerId, Pageable pageable);
+    Page<Order> findAllByManagerIdOrderByCreateTimeDesc(Integer managerId, Pageable pageable);
 
-    Page<Order> findAllByRepairmanId(Integer repairmanId, Pageable pageable);
+    Page<Order> findAllByRepairmanIdOrderByCreateTimeDesc(Integer repairmanId, Pageable pageable);
 
 }

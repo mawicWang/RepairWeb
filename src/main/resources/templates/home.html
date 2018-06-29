@@ -16,6 +16,7 @@
 
     <!--Third party css-->
     <link rel="stylesheet" th:href="@{/css/ui.jqgrid.css}"/>
+    <link rel="stylesheet" th:href="@{/css/jquery.gritter.css}"/>
     <!--[if !IE]> -->
     <link rel="stylesheet" th:href="@{/css/pace.css}" />
     <script data-pace-options='{ "ajax": true, "document": true, "eventLag": false, "elements": false }' th:src="@{/js/pace.js}"></script>
@@ -403,7 +404,7 @@
 
                         <!-- second level item -->
                         <li>
-                            <a data-url="todo" href="#todo">
+                            <a data-url="listUser" href="#listUser">
                                 <i class="menu-icon fa fa-caret-right"></i>
                                 后台用户管理
                             </a>
@@ -506,6 +507,7 @@
     <script th:src="@{/js/dataTables/jquery.dataTables.bootstrap.js}"></script>
     <script th:src="@{/js/bootbox.js}"></script>
     <script th:src="@{/js/jquery.serializejson.js}"></script>
+    <script th:src="@{/js/jquery.gritter.js}"></script>
 
     <script th:src="@{/js/ace.js}"></script>
 

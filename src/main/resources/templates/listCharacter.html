@@ -51,35 +51,7 @@
 </div><!-- /.row -->
 
 <script type="text/javascript">
-    var characterTable =
-        $('#characterTable')
-            .dataTable({
-
-                language: {
-                    "sProcessing": "处理中...",
-                    "sLengthMenu": "显示 _MENU_ 项结果",
-                    "sZeroRecords": "没有匹配结果",
-                    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-                    "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
-                    "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-                    "sInfoPostFix": "",
-                    "sSearch": "搜索:",
-                    "sUrl": "",
-                    "sEmptyTable": "表中数据为空",
-                    "sLoadingRecords": "载入中...",
-                    "sInfoThousands": ",",
-                    "oPaginate": {
-                        "sFirst": "首页",
-                        "sPrevious": "上页",
-                        "sNext": "下页",
-                        "sLast": "末页"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": 以升序排列此列",
-                        "sSortDescending": ": 以降序排列此列"
-                    }
-                }
-            });
+    $('#characterTable').dataTable();
     $("#btnAddCharacter").on('click', detailCharacter);
     $(".btnModifyCharacter").on('click', detailCharacter);
     $(".btnDeleteCharacter").on('click', deleteCharacter);
@@ -88,85 +60,35 @@
         e.preventDefault();
 
         var id = $(this).data("characterId");
-        var dialog = bootbox.dialog({
+        formDialog({
             title: '[[${character}]]',
-            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Loading...</div>',
-            buttons:
-                {
-                    "save":
-                        {
-                            "label": "<i class='ace-icon fa fa-check'></i> 保存",
-                            "className": "btn-sm btn-success",
-                            "callback": function () {
-                                $.ajax({
-                                    type: "post",
-                                    url: "/saveCharacter",
-                                    contentType: "application/json",
-                                    data: JSON.stringify(dialog.find('.bootbox-body').find("form").serializeJSON()),
-                                    success: refreshHome,
-                                    error: function () {
-                                        bootbox.alert({
-                                            message: "发生错误！",
-                                            size: 'small',
-                                            backdrop: true
-                                        });
-                                    }
-                                });
-
-                            }
-                        },
-                    "cancel":
-                        {
-                            "label": "取消",
-                            "className": "btn-sm",
-                            "callback": function () {
-                                //clicked, do something
-                            }
-                        }
-                }
-        });
-        dialog.init(function () {
-            $.ajax({
+            saveAction: "/saveCharacter",
+            detailAjaxOptions: {
                 url: "/detailCharacter",
                 data: {
                     id: id,
                     roleCode: '[[${param.r}]]'
-                },
-                success: function (res) {
-                    dialog.find('.bootbox-body').html(res);
                 }
-            });
+            }
         });
     }
 
     function deleteCharacter(e) {
         e.preventDefault();
         var id = $(this).data("characterId");
-        bootbox.confirm({
+        simpleConfirm({
             title: "删除？",
-            size: 'small',
-            message: "确认删除该[[${character}]]吗？，该操作不可逆！",
-            buttons: {
-                confirm: {
-                    label: '<i class="fa fa-check"></i> 确认',
-                    className: 'btn-danger btn-sm'
-                },
-                cancel: {
-                    label: '<i class="fa fa-times"></i> 取消',
-                    className: 'btn-sm'
+            message: "确认删除该[[${character}]]吗？只有未使用过的用户才可删除！",
+            confirmAjaxOptions: {
+                url: "/deleteCharacter",
+                data: {
+                    id: id
                 }
             },
-            callback: function () {
-                $.ajax({
-                    url: "/deleteCharacter",
-                    data: {
-                        id: id
-                    },
-                    success: refreshHome
-                });
+            saveDone: function (res) {
+                alertMsgWithCallback(res, refreshHome)
             }
         });
-
     }
 </script>
 </body>

@@ -5,6 +5,7 @@ import com.duofuen.repair.domain.Character;
 import com.duofuen.repair.domain.*;
 import com.duofuen.repair.rest.BaseResponse;
 import com.duofuen.repair.rest.RbNull;
+import com.duofuen.repair.util.ChuangLanSmsUtil;
 import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,6 +81,12 @@ public class OrderController {
             }
             RbOrderId rbOrderId = new RbOrderId(order.getId());
             baseResponse = BaseResponse.success(rbOrderId);
+
+            // 发送短信给师傅
+            boolean msgSuccess = ChuangLanSmsUtil.sendMsg(repairman.getPhoneNum(), Const.MSG_NEW_ORDER);
+            if (!msgSuccess) {
+                LOGGER.warn("发送短信给师傅失败！");
+            }
         }
 
         return baseResponse;
@@ -99,9 +106,9 @@ public class OrderController {
 
         Page<Order> orders;
         if (character.get().getRoleCode().equals(Const.ROLE_CODE_MANAGER)) {
-            orders = orderRepository.findAllByManagerId(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
+            orders = orderRepository.findAllByManagerIdOrderByCreateTimeDesc(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
         } else {
-            orders = orderRepository.findAllByRepairmanId(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
+            orders = orderRepository.findAllByRepairmanIdOrderByCreateTimeDesc(userId, PageRequest.of(step, Const.ORDER_PER_PAGE));
         }
 
         RbOrderList rbOrderList = new RbOrderList();

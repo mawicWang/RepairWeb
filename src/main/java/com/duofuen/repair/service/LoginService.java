@@ -4,6 +4,7 @@ import com.duofuen.repair.domain.Character;
 import com.duofuen.repair.domain.*;
 import com.duofuen.repair.rest.RbLogin;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
+import com.duofuen.repair.util.Const;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,8 +125,8 @@ public class LoginService {
             LOGGER.info("phone number {} generated validate code {}", phoneNum, code);
 
             // send message validate time 300s
-            ChuangLanSmsUtil.sendValidateCode(phoneNum, code);
-            return true;
+            String message = Const.MSG_VAL_CODE + code;
+            return ChuangLanSmsUtil.sendMsg(phoneNum, message);
         } catch (Exception e) {
             LOGGER.error(e);
             throw new RuntimeException("send validate code msg fail", e);

@@ -29,9 +29,9 @@ public class ChuangLanSmsUtil {
     //状态报告
     private static final String report = "true";
 
-    public static void sendValidateCode(String phoneNum, String code) {
+    public static boolean sendMsg(String phoneNum, String message) {
         // 设置您要发送的内容：其中“【】”中括号为运营商签名符号，多签名内容前置添加提交
-        String msg = Const.MSG_PREFIX + code;
+        String msg = Const.MSG_PREFIX + message;
 
         SmsSendRequest smsSingleRequest = new SmsSendRequest(account, password, msg, phoneNum, report);
         String requestJson = JSON.toJSONString(smsSingleRequest);
@@ -42,6 +42,12 @@ public class ChuangLanSmsUtil {
 
         SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
         LOGGER.info("response  toString is :" + smsSingleResponse);
+
+        if (smsSingleResponse.getCode().equals("0")) {
+            LOGGER.info("短信发送成功");
+            return true;
+        }
+        return false;
     }
 
 
