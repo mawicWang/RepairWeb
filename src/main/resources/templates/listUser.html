@@ -33,7 +33,7 @@
                         <label>
                             <input name="switch-field-1" class="ace ace-switch ace-switch-6" type="checkbox"
                                    th:data-username="${row.username}" th:checked="${row.enabled}?checked"
-                                   onchange="toggleEnable(this)">
+                                   onchange="toggleUserEnable(this)">
                             <span class="lbl"></span>
                         </label>
                     </td>
@@ -126,7 +126,7 @@
     }
 
 
-    function toggleEnable(obj) {
+    function toggleUserEnable(obj) {
         var data = {
             username: $(obj).data("username"),
             enabled: $(obj).prop('checked')
@@ -134,7 +134,7 @@
 
         startLoad();
         $.ajax({
-            url: "/toggleEnable",
+            url: "/toggleUserEnable",
             data: data
         })
             .always(stopLoad)

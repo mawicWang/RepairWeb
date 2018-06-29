@@ -57,9 +57,9 @@ public class UserController {
     }
 
     @Transactional
-    @RequestMapping("/toggleEnable")
+    @RequestMapping("/toggleUserEnable")
     @ResponseBody
-    public String toggleEnable(String username, Boolean enabled) {
+    public String toggleUserEnable(String username, Boolean enabled) {
         Users users = userService.findByUsername(username);
         users.setEnabled(enabled);
 

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>--</title>
+</head>
+<body>
+<form th:action="@{/saveStore}" class="form-horizontal" role="form" th:object="${store}">
+
+    <input type="hidden" name="id" th:field="*{id}">
+
+    <!-- #section:elements.form -->
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="name"> 名称 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="name" class="col-xs-10 col-sm-8" th:field="*{name}"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="telephone"> 电话 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="telephone" class="col-xs-10 col-sm-8" th:field="*{telephone}"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="addr1Id"> 省或直辖市 </label>
+
+        <div class="col-sm-9">
+            <select id="addr1Id" class="col-xs-5 col-sm-3" th:field="*{addr1Id}">
+                <option id="emptyOption" th:if="*{id==null}" value=""></option>
+                <option th:each="row1:${listAddress1}" th:value="${row1.id}" th:text="${row1.value}"></option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="addr2Id"> 市或区 </label>
+
+        <div class="col-sm-9">
+            <select id="addr2Id" class="col-xs-5 col-sm-3" th:field="*{addr2Id}">
+                <option th:if="*{id}" th:each="row2:${listAddress2}" th:value="${row2.id}"
+                        th:text="${row2.value}"></option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="addr3"> 详细地址 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="addr3" class="col-xs-10 col-sm-8" th:field="*{addr3}"/>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    $("#addr1Id").on("change", function reloadAddress2() {
+        var addr1Id = $(this).val();
+
+        if($("#emptyOption")){
+            $("#emptyOption").remove();
+        }
+        $("#addr2Id").empty();
+        $.ajax({
+            url: "/getAddr2List",
+            data: {addr1Id: addr1Id}
+        })
+            .done(function (res) {
+                for(var i = 0; i < res.length; i++){
+                    $("#addr2Id").append("<option value='"+res[i].id+"'>"+res[i].value+"</option>");
+                }
+                $("#addr2Id option:eq(0)").prop('selected', 'selected');//选中第一个
+            });
+
+    });
+
+</script>
+</body>
+</html>

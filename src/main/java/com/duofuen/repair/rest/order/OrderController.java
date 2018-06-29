@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
 
@@ -52,8 +53,10 @@ public class OrderController {
 
         Optional<Character> character = characterRepository.findById(soRequest.getManagerId());
         if (!character.isPresent() || !character.get().getRoleCode().equals(Const.ROLE_CODE_MANAGER)) {
-            baseResponse = BaseResponse.fail("you must be a MANAGER");
-        } else if (!storeRepository.findById(soRequest.getStoreId()).isPresent()) {
+            return BaseResponse.fail("you must be a MANAGER");
+        }
+        Optional<Store> storeOptional = storeRepository.findById(soRequest.getStoreId());
+        if (!storeOptional.isPresent()) {
             baseResponse = BaseResponse.fail("invalid store id :" + soRequest.getStoreId());
         } else {
             Character repairman = characterRepository.findByStoreIdAndRoleCode(soRequest.getStoreId(), Const.ROLE_CODE_REPAIRMAN);
@@ -83,7 +86,9 @@ public class OrderController {
             baseResponse = BaseResponse.success(rbOrderId);
 
             // 发送短信给师傅
-            boolean msgSuccess = ChuangLanSmsUtil.sendMsg(repairman.getPhoneNum(), Const.MSG_NEW_ORDER);
+            String message = MessageFormat.format(Const.MSG_NEW_ORDER, storeOptional.get().getName(),
+                    storeOptional.get().getCompleteAddr(), storeOptional.get().getTelephone());
+            boolean msgSuccess = ChuangLanSmsUtil.sendMsg(repairman.getPhoneNum(), message);
             if (!msgSuccess) {
                 LOGGER.warn("发送短信给师傅失败！");
             }

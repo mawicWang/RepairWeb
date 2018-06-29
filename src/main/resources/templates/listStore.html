@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>门店管理</title>
+</head>
+<body>
+<div class="row">
+    <p class="col-xs-12">
+        <button id="btnAddStore" class="btn btn-success">新增门店</button>
+    </p>
+
+    <div class="col-xs-12">
+        <div class="table-responsive">
+            <table id="storeTable" class="table table-bordered table-hover ">
+                <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th>门店名称</th>
+                    <th>电话</th>
+                    <th>门店地址</th>
+                    <th width="15%">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row,iterStat : ${listStore}">
+                    <td th:text="${row.id}"></td>
+                    <td th:text="${row.name}"></td>
+                    <td th:text="${row.telephone}"></td>
+                    <td th:text="${row.address1.value+' '+row.address2.value+' '+row.addr3}"></td>
+                    <td>
+                        <p>
+                            <button class="btn btn-white btn-info btn-round btnModifyStore"
+                                    th:data-store-id="${row.id}">
+                                <i class="ace-icon fa fa-pencil bigger-120 icon-only"></i>
+                            </button>
+
+                            <button class="btn btn-white btn-danger btn-round btnDeleteStore"
+                                    th:data-store-id="${row.id}">
+                                <i class="ace-icon fa fa-trash-o bigger-120 icon-only"></i>
+                            </button>
+                        </p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<script>
+    $("#storeTable").dataTable({
+        "columnDefs": [
+            {"type": "num", "targets": 0}
+        ]
+    });
+    $("#btnAddStore").on('click', detailStore);
+    $(".btnModifyStore").on('click', detailStore);
+    $(".btnDeleteStore").on('click', deleteStore);
+
+
+    function detailStore(e) {
+        e.preventDefault();
+        var storeId = $(this).data("storeId");
+        formDialog({
+            title: "门店",
+            saveAction: "/saveStore",
+            detailAjaxOptions: {
+                url: "/detailStore",
+                data: {
+                    storeId: storeId
+                }
+            }
+        });
+    }
+
+    function deleteStore(e) {
+        e.preventDefault();
+        var data = {
+            storeId: $(this).data("storeId"),
+        };
+
+        simpleConfirm({
+            title: "删除？",
+            message: "警告！确认删除该店铺吗？只有未被关联的店铺可以删除！",
+            confirmAjaxOptions: {
+                url: "/deleteStore",
+                data: data
+            },
+            saveDone: function (res) {
+                alertMsgWithCallback(res, refreshHome)
+            },
+            saveFail: function () {
+                alertMsg("删除失败！");
+            }
+        });
+    }
+
+    function toggleStoreEnable(obj) {
+        var data = {
+            storeId: $(obj).data("storeId"),
+            enabled: $(obj).prop('checked')
+        };
+
+        startLoad();
+        $.ajax({
+            url: "/toggleStoreEnable",
+            data: data
+        })
+            .always(stopLoad)
+            .done(alertMsg)
+            .fail(alertError);
+    }
+</script>
+</body>
+</html>

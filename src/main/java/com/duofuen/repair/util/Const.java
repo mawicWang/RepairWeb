@@ -4,7 +4,7 @@ public final class Const {
 
     public static final String MSG_PREFIX = "【253云通讯】";
     public static final String MSG_VAL_CODE = "您的验证码是：";
-    public static final String MSG_NEW_ORDER = "您有一件新的维修订单，请及时查看。";
+    public static final String MSG_NEW_ORDER = "您有一件新的维修订单，请及时查看。店名：{0}，地址：{1}，电话：{2}";
     public static final String MSG_REST_PASSWORD = "您的密码已被重置：{0}，请妥善保管。";
 
     public static final String ROLE_CODE_MANAGER = "00";
@@ -12,6 +12,8 @@ public final class Const {
 
     public static final String ORDER_STATE_OPEN = "00";
     public static final String ORDER_STATE_FINISH = "01";
+    public static final String ORDER_STATE_OPEN_NAME = "待维修";
+    public static final String ORDER_STATE_FINISH_NAME = "维修完成";
     public static final Integer ORDER_PER_PAGE = 10;
 
     public static final String DEFAULT_PASSWORD = "88888888";

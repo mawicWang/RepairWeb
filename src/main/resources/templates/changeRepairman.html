@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>--</title>
+</head>
+<body>
+<form th:action="@{/saveChangeRepairman}" class="form-horizontal" role="form">
+    <input type="hidden" name="orderId" th:value="${orderId}">
+
+    <!-- #section:elements.form -->
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="repairman"> 维修师傅 </label>
+
+        <div class="col-sm-9">
+            <select id="repairman" class="col-xs-5 col-sm-5" name="repairmanId">
+                <option th:each="row,iterStat : ${listRepairman}"
+                        th:value="*{row.id}" th:text="*{row.username}"
+                        th:selected="${curRepairmanId == row.id}?true">
+                    ------
+                </option>
+            </select>
+        </div>
+    </div>
+
+</form>
+</body>
+</html>

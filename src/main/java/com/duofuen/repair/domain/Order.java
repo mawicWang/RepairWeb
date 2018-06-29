@@ -9,8 +9,11 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "store_id")
     private Integer storeId;
+    @Column(name = "manager_id")
     private Integer managerId;
+    @Column(name = "repairman_id")
     private Integer repairmanId;
     private String title;
     @Column(name = "descp")
@@ -18,6 +21,18 @@ public class Order {
     private String orderState;
     private Date createTime;
     private Date finishTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", insertable = false, updatable = false)
+    private Store store;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", insertable = false, updatable = false)
+    private Character manager;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "repairman_id", insertable = false, updatable = false)
+    private Character repairman;
 
     public Integer getId() {
         return id;
@@ -89,5 +104,29 @@ public class Order {
 
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public Character getManager() {
+        return manager;
+    }
+
+    public void setManager(Character manager) {
+        this.manager = manager;
+    }
+
+    public Character getRepairman() {
+        return repairman;
+    }
+
+    public void setRepairman(Character repairman) {
+        this.repairman = repairman;
     }
 }

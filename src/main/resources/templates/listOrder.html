@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单管理</title>
+    <style>
+        th, td {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="row">
+    <div class="col-xs-12">
+        <!-- page content goes here -->
+        <!--<div class="table-responsive">-->
+        <table id="orderTable" class="table table-bordered table-hover ">
+            <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th>门店</th>
+                <th>区域经理</th>
+                <th>维修师傅</th>
+                <th>标题</th>
+                <th>描述</th>
+                <th>订单状态</th>
+                <th>创建时间</th>
+                <th>结束时间</th>
+                <th width="15%">操作</th>
+                <th th:hidden="true">省或直辖市</th>
+                <th th:hidden="true">市或区</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row,iterStat : ${listOrder}">
+                <td th:text="${row.id}"></td>
+                <td th:text="${row.store.name}"></td>
+                <td th:text="${row.manager.username}"></td>
+                <td th:text="${row.repairman.username}"></td>
+                <td th:text="${row.title}"></td>
+                <td th:text="${row.desc}"></td>
+                <td th:text="${orderStateMap.get(row.orderState)}"></td>
+                <td th:text="${#dates.format(row.createTime,'yyyy/MM/dd HH:ss')}"></td>
+                <td th:text="${#dates.format(row.finishTime,'yyyy/MM/dd HH:ss')}"></td>
+                <td th:hidden="true" th:text="${row.store.address1.value}"></td>
+                <td th:hidden="true" th:text="${row.store.address2.value}"></td>
+                <td>
+                    <p>
+                        <button th:if="${'00'==row.orderState}" th:data-order-id="${row.id}"
+                                class="btn btn-white btn-info btn-round btnChangeRepairman">
+                            重新分配师傅
+                        </button>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--</div>-->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<script type="text/javascript">
+    $('#orderTable').dataTable({
+        "columnDefs": [
+            {"type": "num", "targets": 0}
+        ]
+    });
+    $(".btnChangeRepairman").on('click', changeRepairman);
+
+    function changeRepairman(e) {
+        e.preventDefault();
+
+        var orderId = $(this).data("orderId");
+        formDialog({
+            title: '重新分配维修师傅',
+            saveAction: "/saveChangeRepairman",
+            detailAjaxOptions: {
+                url: "/changeRepairman",
+                data: {
+                    orderId: orderId
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

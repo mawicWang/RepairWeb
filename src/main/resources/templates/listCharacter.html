@@ -51,7 +51,11 @@
 </div><!-- /.row -->
 
 <script type="text/javascript">
-    $('#characterTable').dataTable();
+    $('#characterTable').dataTable({
+        "columnDefs": [
+            {"type": "num", "targets": 0}
+        ]
+    });
     $("#btnAddCharacter").on('click', detailCharacter);
     $(".btnModifyCharacter").on('click', detailCharacter);
     $(".btnDeleteCharacter").on('click', deleteCharacter);
@@ -87,6 +91,9 @@
             },
             saveDone: function (res) {
                 alertMsgWithCallback(res, refreshHome)
+            },
+            saveFail: function () {
+                alertMsg("删除失败！");
             }
         });
     }
