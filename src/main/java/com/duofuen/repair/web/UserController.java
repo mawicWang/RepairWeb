@@ -1,13 +1,16 @@
 package com.duofuen.repair.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.duofuen.repair.domain.Users;
-import com.duofuen.repair.domain.UsersRepository;
+import com.duofuen.repair.dto.ChangePasswordDto;
 import com.duofuen.repair.dto.UserDto;
 import com.duofuen.repair.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.transaction.Transactional;
 
@@ -33,11 +36,19 @@ public class UserController {
         return "detailUser";
     }
 
+    @Transactional
     @RequestMapping("/resetPassword")
     @ResponseBody
     public String resetPassword(String username) {
         boolean success = userService.resetPassword(username);
         return success ? "重置密码成功，密码会以短信通知对方。" : "重置密码失败，请检查用户手机号，或联系技术人员。";
+    }
+
+    @Transactional
+    @RequestMapping("/saveChangePassword")
+    @ResponseBody
+    public JSONObject changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
+        return userService.changePassword(changePasswordDto);
     }
 
     @Transactional

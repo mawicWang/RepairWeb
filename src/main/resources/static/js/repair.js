@@ -43,6 +43,25 @@ var formDialog = function (options) {
         method: "post",
         saveBtnLabel: "<i class='ace-icon fa fa-check'></i> 保存",
         cancelBtnLabel: "取消",
+
+        saveBtnCallback: function () {
+            startLoad();
+            $.ajax({
+                type: options.method,
+                url: options.saveAction,
+                contentType: "application/json",
+                data: JSON.stringify(dialog.find('.bootbox-body').find("form").serializeJSON())
+            })
+                .always(options.saveAlways)
+                .done(options.saveDone)
+                .fail(options.saveFail);
+
+            return options.closeDialogInTheEnd;
+        },
+        cancelBtnCallback: function () {
+            //clicked, do something
+        },
+
         saveAlways: stopLoad,
         saveDone: refreshHome,
         saveFail: alertError,
@@ -50,7 +69,9 @@ var formDialog = function (options) {
         detailAjaxOptions: {
             url: "",
             data: {}
-        }
+        },
+
+        closeDialogInTheEnd: true
     };
 
     options = $.extend(default_options, options)
@@ -64,26 +85,13 @@ var formDialog = function (options) {
                     {
                         "label": options.saveBtnLabel,
                         "className": "btn-sm btn-success",
-                        "callback": function () {
-                            startLoad();
-                            $.ajax({
-                                type: options.method,
-                                url: options.saveAction,
-                                contentType: "application/json",
-                                data: JSON.stringify(dialog.find('.bootbox-body').find("form").serializeJSON())
-                            })
-                                .always(options.saveAlways)
-                                .done(options.saveDone)
-                                .fail(options.saveFail);
-                        }
+                        "callback": options.saveBtnCallback
                     },
                 "cancel":
                     {
                         "label": options.cancelBtnLabel,
                         "className": "btn-sm",
-                        "callback": function () {
-                            //clicked, do something
-                        }
+                        "callback": options.cancelBtnCallback
                     }
             }
     });

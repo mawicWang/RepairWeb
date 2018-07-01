@@ -1,13 +1,17 @@
 package com.duofuen.repair.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.duofuen.repair.domain.*;
+import com.duofuen.repair.dto.ChangePasswordDto;
 import com.duofuen.repair.dto.UserDto;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
 import com.duofuen.repair.util.Const;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
@@ -22,7 +26,7 @@ public class UserService {
     private final UsersRepository usersRepository;
     private final BCryptPasswordEncoder encoder;
     private final UserInfoRepository userInfoRepository;
-    private AuthoritiesRepository authoritiesRepository;
+    private final AuthoritiesRepository authoritiesRepository;
 
     @Autowired
     public UserService(UsersRepository usersRepository, BCryptPasswordEncoder encoder,
@@ -98,6 +102,37 @@ public class UserService {
         usersRepository.save(user);
         // 发送短信
         return ChuangLanSmsUtil.sendMsg(userInfo.getPhoneNum(), MessageFormat.format(Const.MSG_REST_PASSWORD, password));
+    }
+
+    public JSONObject changePassword(ChangePasswordDto changePasswordDto) {
+        JSONObject json = new JSONObject();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        Optional<Users> usersOptional = usersRepository.findById(username);
+        Assert.isTrue(usersOptional.isPresent(), "WTF current login user is not exists");
+
+        if (!encoder.matches(changePasswordDto.getCurPassword(), usersOptional.get().getPassword())) {
+            json.put("success", false);
+            json.put("msg", "当前密码输入错误！");
+            return json;
+        }
+
+        String passwordEncoded = encoder.encode(changePasswordDto.getPassword());
+
+        // 保存密码
+        Users user = usersOptional.get();
+        user.setPassword(passwordEncoded);
+        usersRepository.save(user);
+        json.put("success", true);
+        json.put("msg", "密码修改成功");
+        return json;
     }
 
     public void saveUserDto(UserDto userDto) {
