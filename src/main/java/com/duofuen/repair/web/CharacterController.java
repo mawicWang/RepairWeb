@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.duofuen.repair.domain.*;
 import com.duofuen.repair.domain.Character;
 import com.duofuen.repair.dto.ZTreeNode;
+import com.duofuen.repair.util.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.transaction.Transactional;
+import java.beans.Transient;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +118,12 @@ public class CharacterController {
                     Integer aid = associatedAddress2ByOther.indexOf(address2);
                     Character c = associatedAddress2ByOther.get(aid).getCharacter();
                     if (!StringUtils.isEmpty(c.getUsername())) {
-                        childNode.setName(MessageFormat.format("{0}<span class='text-muted'>({1})</span>", childNode.getName(), c.getUsername()));
+                        if (c.getEnabled()) {
+                            childNode.setName(MessageFormat.format("{0}<span class='text-muted'>({1})</span>", childNode.getName(), c.getUsername()));
+                        } else {
+                            childNode.setName(MessageFormat.format("{0}<span class='text-muted'>({1}<span class='red'> 已禁用</span>)</span>", childNode.getName(), c.getUsername()));
+
+                        }
                     }
                 }
 
@@ -129,6 +136,7 @@ public class CharacterController {
         return root;
     }
 
+    @Transactional
     @RequestMapping("/saveAddressTree")
     @ResponseBody
     public String saveAddressTree(@RequestBody JSONObject[] changedArr, @RequestParam Integer characterId) {
@@ -141,5 +149,24 @@ public class CharacterController {
             }
         }
         return "修改分配区域成功";
+    }
+
+    @Transactional
+    @RequestMapping("/toggleCharacterEnable")
+    @ResponseBody
+    public String toggleCharacterEnable(Integer characterId, Boolean enabled) {
+        Optional<Character> optionalCharacter = characterRepository.findById(characterId);
+        if (!optionalCharacter.isPresent()) {
+            return "用户不存在";
+        }
+
+        Character character = optionalCharacter.get();
+        character.setEnabled(enabled);
+
+        characterRepository.save(character);
+
+        return "修改成功，"
+                + (character.getRoleCode().equals(Const.ROLE_CODE_MANAGER) ? "区域经理" : "维修师傅") + " "
+                + character.getUsername() + " 已经" + (enabled ? "启用" : "禁用");
     }
 }

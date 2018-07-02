@@ -49,8 +49,9 @@ public class OrderWebController {
     public String changeRepairman(Integer orderId, Model model) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         Assert.isTrue(orderOptional.isPresent(), "orderId not correct!");
+        Assert.isTrue(orderOptional.get().getOrderState().equals(Const.ORDER_STATE_OPEN), "order is already finished!");
 
-        List<Character> listRepairman = characterRepository.findByAddress1Id(orderOptional.get().getStore().getAddr1Id(), Const.ROLE_CODE_REPAIRMAN);
+        List<Character> listRepairman = characterRepository.findByAddress1IdAndEnabledTrue(orderOptional.get().getStore().getAddr1Id(), Const.ROLE_CODE_REPAIRMAN);
         model.addAttribute("listRepairman", listRepairman);
         model.addAttribute("curRepairmanId", orderOptional.get().getRepairmanId());
         model.addAttribute("orderId", orderId);
@@ -70,7 +71,7 @@ public class OrderWebController {
                 , "you must be a repairman!");
 
         // check repairman is available for order
-        List<Character> listRepairman = characterRepository.findByAddress1Id(orderOptional.get().getStore().getAddr1Id(), Const.ROLE_CODE_REPAIRMAN);
+        List<Character> listRepairman = characterRepository.findByAddress1IdAndEnabledTrue(orderOptional.get().getStore().getAddr1Id(), Const.ROLE_CODE_REPAIRMAN);
         Assert.isTrue(listRepairman.contains(characterOptional.get()), "repair man is not available for order");
 
         Order order = orderOptional.get();

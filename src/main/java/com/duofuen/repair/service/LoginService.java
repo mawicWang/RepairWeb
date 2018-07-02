@@ -37,7 +37,7 @@ public class LoginService {
     @Transactional
     public RbLogin loginByPhoneNum(String phoneNum, String pwd, String openId) {
         RbLogin rbLogin = null;
-        Character character = characterRepository.findByPhoneNum(phoneNum);
+        Character character = characterRepository.findByPhoneNumAndEnabledTrue(phoneNum);
         ValCode validateCode = valCodeRepository.findByPhoneNum(phoneNum);
         if (null != character && null != validateCode
                 // validate code should be used in 5 minutes
@@ -55,7 +55,7 @@ public class LoginService {
     }
 
     public RbLogin loginByOpenId(String openId) {
-        Character character = characterRepository.findByOpenId(openId);
+        Character character = characterRepository.findByOpenIdAndEnabledTrue(openId);
         if (null != character) {
             LOGGER.info("openid {} login successful", openId);
             RbLogin rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
@@ -91,7 +91,7 @@ public class LoginService {
 
 
     public boolean checkPhoneNumExists(String phoneNum) {
-        Character character = characterRepository.findByPhoneNum(phoneNum);
+        Character character = characterRepository.findByPhoneNumAndEnabledTrue(phoneNum);
         return null != character;
     }
 

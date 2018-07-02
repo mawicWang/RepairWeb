@@ -43,11 +43,11 @@ public class StoreController {
             return BaseResponse.fail("userId must not be empty");
         }
 
-        Optional<Character> character = characterRepository.findById(userId);
+        Optional<Character> character = characterRepository.findByIdAndEnabledTrue(userId);
         if (!character.isPresent() || !character.get().getRoleCode().equals(ROLE_CODE_MANAGER)) {
             baseResponse = BaseResponse.fail("you must be a MANAGER");
         } else {
-            List<Store> stores = storeRepository.findAllByUserId(userId, ROLE_CODE_MANAGER);
+            List<Store> stores = storeRepository.findAllByUserIdAndEnabledTrue(userId, ROLE_CODE_MANAGER);
             RbStoreList rbStoreList = new RbStoreList();
             List<RbStoreList.Store> storeList = new ArrayList<>();
             for (Store s : stores) {

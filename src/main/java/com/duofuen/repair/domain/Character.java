@@ -20,6 +20,9 @@ public class Character {
 
     private String roleCode;
 
+    private Boolean enabled;
+
+
     public Integer getId() {
         return id;
     }
@@ -58,5 +61,13 @@ public class Character {
 
     public void setRoleCode(String roleCode) {
         this.roleCode = roleCode;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

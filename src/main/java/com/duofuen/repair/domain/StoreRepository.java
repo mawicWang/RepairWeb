@@ -12,7 +12,10 @@ public interface StoreRepository extends CrudRepository<Store, Integer> {
 
     @Query("select s from Store s, Address2 a2, CharaAddr2 ca2, Character c " +
             "where s.addr2Id = a2.id and ca2.id.addr2Id = a2.id and ca2.id.characterId = c.id " +
-            "and c.id = ?1 and c.roleCode = ?2")
-    List<Store> findAllByUserId(Integer userId, String roleCode);
+            "and c.id = ?1 and c.roleCode = ?2 and s.enabled = true")
+    List<Store> findAllByUserIdAndEnabledTrue(Integer userId, String roleCode);
+
+    Optional<Store> findByIdAndEnabledTrue(Integer id);
+
 
 }

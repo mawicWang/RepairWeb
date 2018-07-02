@@ -19,6 +19,7 @@
                     <th>门店名称</th>
                     <th>电话</th>
                     <th>门店地址</th>
+                    <th>状态</th>
                     <th width="15%">操作</th>
                 </tr>
                 </thead>
@@ -28,6 +29,14 @@
                     <td th:text="${row.name}"></td>
                     <td th:text="${row.telephone}"></td>
                     <td th:text="${row.address1.value+' '+row.address2.value+' '+row.addr3}"></td>
+                    <td>
+                        <label>
+                            <input name="switch-field-1" class="ace ace-switch ace-switch-6" type="checkbox"
+                                   th:data-store-id="${row.id}" th:checked="${row.enabled}?checked"
+                                   onchange="toggleStoreEnable(this)">
+                            <span class="lbl"></span>
+                        </label>
+                    </td>
                     <td>
                         <p>
                             <button class="btn btn-white btn-info btn-round btnModifyStore"

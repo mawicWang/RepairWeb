@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Controller
@@ -62,6 +63,7 @@ public class StoreWebController {
         return null;
     }
 
+    @Transactional
     @RequestMapping("/saveStore")
     @ResponseBody
     public String saveStore(@RequestBody Store store) {
@@ -69,10 +71,28 @@ public class StoreWebController {
         return "success";
     }
 
+    @Transactional
     @RequestMapping("/deleteStore")
     @ResponseBody
     public String deleteStore(Integer storeId) {
         storeRepository.deleteById(storeId);
         return "删除成功！";
+    }
+
+    @Transactional
+    @RequestMapping("/toggleStoreEnable")
+    @ResponseBody
+    public String toggleStoreEnable(Integer storeId, Boolean enabled) {
+        Optional<Store> storeOptional = storeRepository.findById(storeId);
+        if (!storeOptional.isPresent()) {
+            return "门店不存在";
+        }
+
+        Store store = storeOptional.get();
+        store.setEnabled(enabled);
+
+        storeRepository.save(store);
+
+        return "修改成功，门店 " + store.getName() + " 已经" + (enabled ? "启用" : "禁用");
     }
 }

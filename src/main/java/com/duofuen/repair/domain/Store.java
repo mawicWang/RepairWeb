@@ -14,6 +14,7 @@ public class Store {
     @Column(name = "addr2_id")
     private Integer addr2Id;
     private String addr3;
+    private Boolean enabled;
     @Transient
     private String completeAddr;
 
@@ -70,6 +71,14 @@ public class Store {
 
     public void setAddr3(String addr3) {
         this.addr3 = addr3;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getCompleteAddr() {

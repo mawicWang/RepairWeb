@@ -2,7 +2,7 @@ package com.duofuen.repair.util;
 
 public final class Const {
 
-    public static final String MSG_PREFIX = "【253云通讯】";
+    public static final String MSG_PREFIX = "【253云通讯】【维修系统后台】";
     public static final String MSG_VAL_CODE = "您的验证码是：";
     public static final String MSG_NEW_ORDER = "您有一件新的维修订单，请及时查看。店名：{0}，地址：{1}，电话：{2}";
     public static final String MSG_REST_PASSWORD = "您的密码已被重置：{0}，请妥善保管。";
