@@ -1,22 +1,42 @@
 package com.duofuen.repair.web;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.duofuen.repair.domain.*;
 import com.duofuen.repair.domain.Character;
-import com.duofuen.repair.domain.CharacterRepository;
+import com.duofuen.repair.dto.ZTreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.transaction.Transactional;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class CharacterController {
 
     private final CharacterRepository characterRepository;
+    private final Address1Repository address1Repository;
+    private final Address2Repository address2Repository;
+    private final CharaAddr2Repository charaAddr2Repository;
 
     @Autowired
-    public CharacterController(CharacterRepository characterRepository) {
+    public CharacterController(CharacterRepository characterRepository, Address1Repository address1Repository,
+                               Address2Repository address2Repository, CharaAddr2Repository charaAddr2Repository) {
         this.characterRepository = characterRepository;
+        this.address1Repository = address1Repository;
+        this.address2Repository = address2Repository;
+        this.charaAddr2Repository = charaAddr2Repository;
     }
 
     @RequestMapping("/listCharacter")
@@ -41,7 +61,7 @@ public class CharacterController {
     }
 
     @Transactional
-    @RequestMapping("saveCharacter")
+    @RequestMapping("/saveCharacter")
     @ResponseBody
     public String saveCharacter(@RequestBody Character character) {
         characterRepository.save(character);
@@ -49,10 +69,77 @@ public class CharacterController {
     }
 
     @Transactional
-    @RequestMapping("deleteCharacter")
+    @RequestMapping("/deleteCharacter")
     @ResponseBody
     public String deleteCharacter(@RequestParam Integer id) {
         characterRepository.deleteById(id);
         return "删除成功！";
+    }
+
+    @RequestMapping("/allotArea")
+    public String allotArea(Integer characterId, Model model) {
+        model.addAttribute("id", characterId);
+        return "allotArea";
+    }
+
+    @RequestMapping("/getAddressTree")
+    @ResponseBody
+    public JSONArray getAddressTree(Integer characterId) {
+        Optional<Character> character = characterRepository.findById(characterId);
+        Assert.isTrue(character.isPresent(), "invalide characterId");
+
+        JSONArray root = new JSONArray();
+
+
+        List<Address2> associatedAddress2 = address2Repository.findAllByCharacterId(characterId);
+        List<Address2> associatedAddress2ByOther = address2Repository.findAllByCharacterIdExcluded(characterId, character.get().getRoleCode());
+
+
+        Iterable<Address1> listAddress1 = address1Repository.findAll();
+        for (Address1 address1 : listAddress1) {
+            ZTreeNode node = new ZTreeNode();
+            node.setId(address1.getId());
+            node.setName(address1.getValue());
+            node.setChildren(new ArrayList<>());
+
+            for (Address2 address2 : address1.getListAddress2()) {
+                ZTreeNode childNode = new ZTreeNode();
+                childNode.setId(address2.getId());
+                childNode.setName(address2.getValue());
+
+                if (associatedAddress2.contains(address2)) {
+                    childNode.setChecked(true);
+                }
+                if (associatedAddress2ByOther.contains(address2)) {
+                    childNode.setChkDisabled(true);
+
+                    Integer aid = associatedAddress2ByOther.indexOf(address2);
+                    Character c = associatedAddress2ByOther.get(aid).getCharacter();
+                    if (!StringUtils.isEmpty(c.getUsername())) {
+                        childNode.setName(MessageFormat.format("{0}<span class='text-muted'>({1})</span>", childNode.getName(), c.getUsername()));
+                    }
+                }
+
+                node.getChildren().add(childNode);
+            }
+
+            root.add(JSON.toJSON(node));
+        }
+
+        return root;
+    }
+
+    @RequestMapping("/saveAddressTree")
+    @ResponseBody
+    public String saveAddressTree(@RequestBody JSONObject[] changedArr, @RequestParam Integer characterId) {
+        for (JSONObject object : changedArr) {
+
+            if ((boolean) object.get("checked")) {
+                charaAddr2Repository.save(new CharaAddr2(characterId, (Integer) object.get("id")));
+            } else {
+                charaAddr2Repository.deleteById(new CharaAddr2PK(characterId, (Integer) object.get("id")));
+            }
+        }
+        return "修改分配区域成功";
     }
 }

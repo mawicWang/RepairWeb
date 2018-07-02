@@ -41,6 +41,11 @@
                                     th:data-character-id="${row.id}">
                                 <i class="ace-icon fa fa-trash-o bigger-120 icon-only"></i>
                             </button>
+
+                            <button class="btn btn-white btn-danger btn-round btnAllotArea" title="分配区域"
+                                    th:data-character-id="${row.id}" th:data-character-name="${row.username}">
+                                <i class="ace-icon fa fa-reorder bigger-120 icon-only"></i>
+                            </button>
                         </p>
                     </td>
                 </tr>
@@ -59,6 +64,7 @@
     $("#btnAddCharacter").on('click', detailCharacter);
     $(".btnModifyCharacter").on('click', detailCharacter);
     $(".btnDeleteCharacter").on('click', deleteCharacter);
+    $(".btnAllotArea").on('click', allotArea);
 
     function detailCharacter(e) {
         e.preventDefault();
@@ -97,6 +103,55 @@
             }
         });
     }
+
+    function allotArea(e) {
+        e.preventDefault();
+
+        var id = $(this).data("characterId");
+        var name = $(this).data("characterName");
+
+
+        var dialog = bootbox.dialog({
+            title: "分配区域 - <span class='text-muted'>" + name + "</span>",
+            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Loading...</div>',
+            size: "small",
+            buttons:
+                {
+                    "save":
+                        {
+                            "label": "<i class='ace-icon fa fa-check'></i> 保存",
+                            "className": "btn-sm btn-success",
+                            "callback": function () {
+                                $("#zTree").trigger("saveTree");
+                                return false;
+                            }
+                        },
+                    "cancel":
+                        {
+                            "label": "取消",
+                            "className": "btn-sm",
+                            "callback": function () {
+                                //clicked, do something
+                            }
+                        }
+                }
+        });
+
+        dialog.init(function () {
+            $.ajax({
+                url: "/allotArea",
+                data: {characterId: id}
+            })
+                .done(function (res) {
+                    dialog.find('.bootbox-body').html(res);
+                })
+                .fail(function () {
+                    alertError();
+                    dialog.hide();
+                });
+        });
+    }
+
 </script>
 </body>
 </html>

@@ -12,6 +12,17 @@ public class CharaAddr2 {
         return id;
     }
 
+    public CharaAddr2() {
+    }
+
+    public CharaAddr2(Integer characterId, Integer addr2Id) {
+        CharaAddr2PK id = new CharaAddr2PK();
+        id.setCharacterId(characterId);
+        id.setAddr2Id(addr2Id);
+
+        this.id = id;
+    }
+
     public void setId(CharaAddr2PK id) {
         this.id = id;
     }

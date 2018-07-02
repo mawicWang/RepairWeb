@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分配区域</title>
+</head>
+<body>
+<div id="loadingTree" class="text-center"><i class="fa fa-spin fa-spinner"></i> Loading...</div>
+<div class="col-sm-offset-3">
+    <ul id="zTree" class="ztree"></ul>
+</div>
+</body>
+
+<script>
+    $("#zTree").hide();
+
+    /* -------zTree-------- */
+    /* -------http://www.treejs.cn/v3/api.php-------- */
+    $(document).ready(function () {
+
+
+        var setting = {
+            view: {
+                dblClickExpand: false,
+                nameIsHTML: true
+            },
+            check: {
+                enable: true
+            },
+            callback: {
+                onClick: onNodeClick
+            }
+        };
+
+        var zTreeObj;
+        $.ajax({
+            url: "/getAddressTree",
+            data: {characterId: '[[${id}]]'},
+            type: 'POST',
+            dataType: 'json'
+        }).done(function (res) {
+            zTreeObj = $.fn.zTree.init($("#zTree"), setting, res);
+            $("#loadingTree").hide();
+            $("#zTree").show();
+
+        }).fail("加载区域列表失败！");
+
+
+        function onNodeClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("zTree");
+            zTree.expandNode(treeNode);
+        }
+
+        $("#zTree").on("saveTree", function () {
+            var checkedArr = $.grep(zTreeObj.getChangeCheckedNodes(true), function (n, i) {
+                if (n.level == '0') return false;
+                return true;
+            })
+
+            if (checkedArr.length == 0) {
+                alertMsg("没有提交修改");
+                return;
+            }
+
+            console.log(checkedArr);
+
+            var btnSaveIcon = $("[data-bb-handler=save] i");
+            btnSaveIcon.removeClass("fa-check");
+            btnSaveIcon.addClass("fa-spin fa-spinner");
+            $.ajax({
+                url: "/saveAddressTree?characterId="+[[${id}]],
+                data: JSON.stringify(checkedArr),
+                contentType: "application/json",
+                type: "json"
+            }).always(function () {
+                btnSaveIcon.removeClass("fa-spin fa-spinner");
+                btnSaveIcon.addClass("fa-check");
+            }).done(function (res) {
+                bootbox.hideAll();
+                alertMsg(res);
+            })
+        });
+    });
+
+</script>
+</html>

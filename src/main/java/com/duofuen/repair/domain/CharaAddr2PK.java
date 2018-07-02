@@ -10,6 +10,14 @@ public class CharaAddr2PK implements Serializable {
     @Column(name = "addr2_id")
     private Integer addr2Id;
 
+    public CharaAddr2PK() {
+    }
+
+    public CharaAddr2PK(Integer characterId, Integer addr2Id) {
+        this.characterId = characterId;
+        this.addr2Id = addr2Id;
+    }
+
     public Integer getCharacterId() {
         return characterId;
     }
