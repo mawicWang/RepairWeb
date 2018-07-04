@@ -38,16 +38,18 @@ public class OrderController {
     private final OrderRepository orderRepository;
     private final OrderImageRepository orderImageRepository;
     private final UserService userService;
+    private final OrderRecordRepository orderRecordRepository;
 
     @Autowired
     public OrderController(StoreRepository storeRepository, CharacterRepository characterRepository,
                            OrderRepository orderRepository, OrderImageRepository orderImageRepository,
-                           UserService userService) {
+                           UserService userService, OrderRecordRepository orderRecordRepository) {
         this.storeRepository = storeRepository;
         this.characterRepository = characterRepository;
         this.orderRepository = orderRepository;
         this.orderImageRepository = orderImageRepository;
         this.userService = userService;
+        this.orderRecordRepository = orderRecordRepository;
     }
 
     @Transactional
@@ -89,6 +91,14 @@ public class OrderController {
             RbOrderId rbOrderId = new RbOrderId(order.getId());
             baseResponse = BaseResponse.success(rbOrderId);
 
+
+            // save order operation record
+            orderRecordRepository.save(
+                    new OrderRecord(order.getId(),
+                            "create",
+                            MessageFormat.format("用户（区域经理）#{0} 提交新订单，id#{1} ，门店#{2}，师傅#{3}",
+                                    order.getManagerId(), order.getId(), order.getStoreId(), order.getStoreId()),
+                            new Date()));
 
             if (repairman == null) {
                 // 发送短信给客服配师傅
@@ -238,6 +248,15 @@ public class OrderController {
             order.setOrderState(Const.ORDER_STATE_FINISH);
             order.setFinishTime(new Date());
             orderRepository.save(order);
+
+            // save order operation record
+            orderRecordRepository.save(
+                    new OrderRecord(order.getId(),
+                            "complete",
+                            MessageFormat.format("用户（维修师傅）#{0} 完成订单 id #{1}",
+                                    order.getRepairmanId(), order.getId()),
+                            new Date()));
+
             response = BaseResponse.success(new RbNull());
         }
 

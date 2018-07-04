@@ -14,7 +14,17 @@ public class OrderRecord {
     private Integer orderId;
     private String type;
     private String record;
-    private Date createTime;
+    private Date recordTime;
+
+    public OrderRecord() {
+    }
+
+    public OrderRecord(Integer orderId, String type, String record, Date recordTime) {
+        this.orderId = orderId;
+        this.type = type;
+        this.record = record;
+        this.recordTime = recordTime;
+    }
 
     public Integer getId() {
         return id;
@@ -48,11 +58,11 @@ public class OrderRecord {
         this.record = record;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getRecordTime() {
+        return recordTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setRecordTime(Date recordTime) {
+        this.recordTime = recordTime;
     }
 }

@@ -1,13 +1,13 @@
 package com.duofuen.repair.web;
 
 
+import com.duofuen.repair.domain.*;
 import com.duofuen.repair.domain.Character;
-import com.duofuen.repair.domain.CharacterRepository;
-import com.duofuen.repair.domain.Order;
-import com.duofuen.repair.domain.OrderRepository;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
 import com.duofuen.repair.util.Const;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.transaction.Transactional;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class OrderWebController {
 
     private final OrderRepository orderRepository;
     private final CharacterRepository characterRepository;
+    private final OrderRecordRepository orderRecordRepository;
 
 
     @Autowired
-    public OrderWebController(OrderRepository orderRepository, CharacterRepository characterRepository) {
+    public OrderWebController(OrderRepository orderRepository, CharacterRepository characterRepository,
+                              OrderRecordRepository orderRecordRepository) {
         this.orderRepository = orderRepository;
         this.characterRepository = characterRepository;
+        this.orderRecordRepository = orderRecordRepository;
     }
 
     @RequestMapping("/listOrder")
@@ -75,8 +75,25 @@ public class OrderWebController {
         Assert.isTrue(listRepairman.contains(characterOptional.get()), "repair man is not available for order");
 
         Order order = orderOptional.get();
+        Integer curRepairmanId = order.getRepairmanId();
         order.setRepairmanId(param.get("repairmanId"));
         orderRepository.save(order);
+
+        // save order operation record
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+        orderRecordRepository.save(
+                new OrderRecord(order.getId(),
+                        "changeRepairman",
+                        MessageFormat.format("后台用户 <{0}> 为订单id#{1} 重新分配维修师傅。从 #{2} 修改为 #{3}",
+                                username, order.getId(), curRepairmanId, order.getRepairmanId()),
+                        new Date()));
+
         // 发送短信给师傅
         String message = MessageFormat.format(Const.MSG_NEW_ORDER, order.getStore().getName(),
                 order.getStore().getCompleteAddr(), order.getStore().getTelephone());
