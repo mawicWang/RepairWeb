@@ -113,9 +113,13 @@
 
             var min = $('#startDate').val();
             var max = $('#endDate').val();
+
             // 去时间 舍去时分秒
             var sDate = new Date(data[7].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
-            var eDate = new Date(data[8].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
+            var eDate = NaN;
+            if (data[8] != '') {
+                eDate = new Date(data[8].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
+            }
             if (rx.test(min) && rx.test(max)) {
                 min = new Date(min).getTime();
                 max = new Date(max).getTime();
