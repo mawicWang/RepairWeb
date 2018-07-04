@@ -15,6 +15,6 @@ public class BasicController {
 
     @RequestMapping("/")
     public String root() {
-        return "redirect:/index";
+        return "redirect:/home";
     }
 }
