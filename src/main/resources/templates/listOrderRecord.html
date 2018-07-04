@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>--</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-responsive">
+            <table id="orderRecordTable" class="table table-bordered table-hover ">
+                <thead>
+                <tr>
+                    <th width="5%" hidden="true">#</th>
+                    <th width="15%" hidden="true">订单编号</th>
+                    <th>操作</th>
+                    <th>记录</th>
+                    <th>操作时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row,iterStat : ${listOrderRecord}">
+                    <td th:text="${row.id}"  hidden="true"></td>
+                    <td th:text="${row.orderId}"  hidden="true"></td>
+                    <td th:text="${row.type}"></td>
+                    <td th:text="${row.record}"></td>
+                    <td th:text="${row.recordTime}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

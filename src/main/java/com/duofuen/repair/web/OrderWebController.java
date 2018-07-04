@@ -5,6 +5,7 @@ import com.duofuen.repair.domain.*;
 import com.duofuen.repair.domain.Character;
 import com.duofuen.repair.util.ChuangLanSmsUtil;
 import com.duofuen.repair.util.Const;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -103,6 +104,18 @@ public class OrderWebController {
         }
         return "重新分配师傅成功，系统会以短信通知师傅。";
     }
+
+    @RequestMapping("/showOrderHistory")
+    public String showOrderHistory(Integer orderId, Model model) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        Assert.isTrue(orderOptional.isPresent(), "invalid orderId");
+
+        Iterable<OrderRecord> listOrderRecord = orderRecordRepository.findAllByOrderId(orderId);
+        model.addAttribute("listOrderRecord", listOrderRecord);
+
+        return "listOrderRecord";
+    }
+
 
     private Map<String, String> orderStateMap() {
         Map<String, String> map = new HashMap<>();

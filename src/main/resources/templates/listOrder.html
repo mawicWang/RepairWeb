@@ -58,6 +58,11 @@
                 <td th:hidden="true" th:text="${row.store.address2.value}"></td>
                 <td>
                     <p>
+                        <button class="btn btn-white btn-warning btn-round btnShowHistory"
+                                th:data-order-id="${row.id}">
+                            <i class="ace-icon fa fa-history bigger-120 icon-only"></i>
+                        </button>
+
                         <button th:if="${'00'==row.orderState}" th:data-order-id="${row.id}"
                                 class="btn btn-white btn-info btn-round btnChangeRepairman">
                             重新分配师傅
@@ -73,6 +78,8 @@
 
 <script type="text/javascript">
     $(".btnChangeRepairman").on('click', changeRepairman);
+    $(".btnShowHistory").on('click', btnShowHistory);
+
     var table = $('#orderTable').DataTable({
         "columnDefs": [
             {"type": "num", "targets": 0},
@@ -97,14 +104,38 @@
         });
     }
 
+    function btnShowHistory(e) {
+        e.preventDefault();
+
+        var orderId = $(this).data("orderId");
+        var dialog = bootbox.alert({
+            title: '操作历史',
+            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Loading...</div>',
+            backdrop: true
+        });
+
+        dialog.init(function () {
+            $.ajax({
+                url: "/showOrderHistory",
+                data: {orderId: orderId}
+
+            })
+                .done(function (res) {
+                    dialog.find('.bootbox-body').html(res);
+                })
+                .fail(function () {
+                    alertError();
+                    dialog.hide();
+                });
+        });
+    }
+
     $('.input-daterange').datepicker({
         language: 'cn',
         format: 'yyyy/mm/dd',
         autoclose: true,
         todayHighlight: true
     });
-
-    console.log(window.location.href.split('#')[1]);
 
     /* 自定义过滤函数，判断日期是否时间是否处于2个日期之间 */
     $.fn.dataTable.ext.search.push(
@@ -126,8 +157,7 @@
                 max = new Date(max).getTime();
 
                 return (sDate >= min && (isNaN(eDate) || eDate <= max))
-                /* ||
-                                    (date >= max && date <= min)//先后时间填写反，如果按照字段说明，那么去掉这个判断*/
+                /* ||(date >= max && date <= min)//先后时间填写反，如果按照字段说明，那么去掉这个判断*/
             }
 
             return true;
