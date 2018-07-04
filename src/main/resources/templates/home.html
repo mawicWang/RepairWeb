@@ -134,7 +134,7 @@
                     </li>
 
                     <!-- second level item -->
-                    <li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a data-url="listStore" href="#listStore">
                             <i class="menu-icon fa fa-caret-right"></i>
                             门店管理
@@ -143,7 +143,7 @@
                     </li>
 
                     <!-- second level item -->
-                    <li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a data-url="listUser" href="#listUser">
                             <i class="menu-icon fa fa-caret-right"></i>
                             后台用户管理
@@ -152,7 +152,7 @@
                     </li>
 
                     <!-- second level item -->
-                    <li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a data-url="listCharacter?r=00" href="#listCharacter?r=00">
                             <i class="menu-icon fa fa-caret-right"></i>
                             区域经理管理
@@ -161,7 +161,7 @@
                     </li>
 
                     <!-- second level item -->
-                    <li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a data-url="listCharacter?r=01" href="#listCharacter?r=01">
                             <i class="menu-icon fa fa-caret-right"></i>
                             维修师傅管理
