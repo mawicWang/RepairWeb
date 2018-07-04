@@ -49,11 +49,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/css/**", "/fonts/**", "/js/**", "/index", "/rest/**", "/wx/**").permitAll()
+                .antMatchers("/css/**", "/fonts/**", "/js/**", "/index", "/", "/rest/**", "/wx/**").permitAll()
 //                .antMatchers("/home").hasRole("USER")
+                .antMatchers("/listOrder", "/changeRepairman", "/saveChangeRepairman",
+                        "/changePassword", "/saveChangePassword", "/home", "/welcome").hasAnyRole("USER","ADMIN")
+                .antMatchers("/**").hasRole("ADMIN")
                 .and()
             .formLogin()
-            .   loginPage("/login").permitAll()
+                .loginPage("/login").permitAll()
                 .and()
             .logout().permitAll()
                 .and()

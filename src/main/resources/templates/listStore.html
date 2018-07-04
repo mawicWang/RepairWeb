@@ -58,15 +58,15 @@
     </div>
 </div>
 <script>
+    $("#btnAddStore").on('click', detailStore);
+    $(".btnModifyStore").on('click', detailStore);
+    $(".btnDeleteStore").on('click', deleteStore);
+
     $("#storeTable").dataTable({
         "columnDefs": [
             {"type": "num", "targets": 0}
         ]
     });
-    $("#btnAddStore").on('click', detailStore);
-    $(".btnModifyStore").on('click', detailStore);
-    $(".btnDeleteStore").on('click', deleteStore);
-
 
     function detailStore(e) {
         e.preventDefault();

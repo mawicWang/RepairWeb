@@ -65,7 +65,6 @@
     </div>
 </div>
 <script>
-    $("#userTable").dataTable();
     $(".btnResetPassword").tooltip({
         delay: {show: 500}
     });
@@ -73,6 +72,8 @@
     $(".btnModifyUser").on('click', detailUser);
     $(".btnDeleteUser").on('click', deleteUser);
     $(".btnResetPassword").on('click', resetPassword);
+
+    $("#userTable").dataTable();
 
 
     function detailUser(e) {

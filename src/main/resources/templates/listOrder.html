@@ -32,7 +32,7 @@
                 <td th:text="${row.id}"></td>
                 <td th:text="${row.store.name}"></td>
                 <td th:text="${row.manager.username}"></td>
-                <td th:text="${row.repairman.username}"></td>
+                <td th:text="${row.repairman}?${row.repairman.username}"></td>
                 <td th:text="${row.title}"></td>
                 <td th:text="${row.desc}"></td>
                 <td th:text="${orderStateMap.get(row.orderState)}"></td>
@@ -56,12 +56,14 @@
 </div><!-- /.row -->
 
 <script type="text/javascript">
+    $(".btnChangeRepairman").on('click', changeRepairman);
     $('#orderTable').dataTable({
         "columnDefs": [
-            {"type": "num", "targets": 0}
+            {"type": "num", "targets": 0},
+            {"type": "date", "targets": 7},
+            {"type": "date", "targets": 8}
         ]
     });
-    $(".btnChangeRepairman").on('click', changeRepairman);
 
     function changeRepairman(e) {
         e.preventDefault();

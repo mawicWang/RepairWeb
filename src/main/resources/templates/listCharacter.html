@@ -65,15 +65,16 @@
 </div><!-- /.row -->
 
 <script type="text/javascript">
+    $("#btnAddCharacter").on('click', detailCharacter);
+    $(".btnModifyCharacter").on('click', detailCharacter);
+    $(".btnDeleteCharacter").on('click', deleteCharacter);
+    $(".btnAllotArea").on('click', allotArea);
+
     $('#characterTable').dataTable({
         "columnDefs": [
             {"type": "num", "targets": 0}
         ]
     });
-    $("#btnAddCharacter").on('click', detailCharacter);
-    $(".btnModifyCharacter").on('click', detailCharacter);
-    $(".btnDeleteCharacter").on('click', deleteCharacter);
-    $(".btnAllotArea").on('click', allotArea);
 
     function detailCharacter(e) {
         e.preventDefault();
