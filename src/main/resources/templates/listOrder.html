@@ -7,6 +7,22 @@
 <body>
 <div class="row">
     <div class="col-xs-12">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-4 control-label no-padding-right" for="startDate"> 时间范围 </label>
+
+                <div class="col-sm-6">
+                    <div class="input-daterange input-group">
+                        <input type="text" id="startDate" placeholder="开始时间" readonly="readonly"/>
+                        ~
+                        <input type="text" id="endDate" placeholder="结束时间" readonly="readonly"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-xs-12">
         <!-- page content goes here -->
         <!--<div class="table-responsive">-->
         <table id="orderTable" class="table table-bordered table-hover ">
@@ -57,7 +73,7 @@
 
 <script type="text/javascript">
     $(".btnChangeRepairman").on('click', changeRepairman);
-    $('#orderTable').dataTable({
+    var table = $('#orderTable').DataTable({
         "columnDefs": [
             {"type": "num", "targets": 0},
             {"type": "date", "targets": 7},
@@ -80,6 +96,41 @@
             }
         });
     }
+
+    $('.input-daterange').datepicker({
+        language: 'cn',
+        format: 'yyyy/mm/dd',
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    console.log(new Date("").getTime());
+
+    /* 自定义过滤函数，判断日期是否时间是否处于2个日期之间 */
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var rx = /^\d{4}(\/\d{1,2}){2}$/;//日期正则，只判断格式，是否输入正确不加判断
+
+            var min = $('#startDate').val();
+            var max = $('#endDate').val();
+            // 去时间 舍去时分秒
+            var sDate = new Date(data[7].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
+            var eDate = new Date(data[8].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
+            if (rx.test(min) && rx.test(max)) {
+                min = new Date(min).getTime();
+                max = new Date(max).getTime();
+
+                return (sDate >= min && (isNaN(eDate) || eDate <= max))/* ||
+                    (date >= max && date <= min)//先后时间填写反，如果按照字段说明，那么去掉这个判断*/
+            }
+
+            return true;
+        }
+    );
+    //给2个输入框添加blur事件调用draw方法执行自定义过滤函数
+    $('#startDate, #endDate').change(function () {
+        table.draw();
+    });
 </script>
 </body>
 </html>
