@@ -104,11 +104,15 @@
         todayHighlight: true
     });
 
-    console.log(new Date("").getTime());
+    console.log(window.location.href.split('#')[1]);
 
     /* 自定义过滤函数，判断日期是否时间是否处于2个日期之间 */
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {
+            if (window.location.href.split('#').length > 1
+                && window.location.href.split('#')[1] != 'listOrder') {
+                return true;
+            }
             var rx = /^\d{4}(\/\d{1,2}){2}$/;//日期正则，只判断格式，是否输入正确不加判断
 
             var min = $('#startDate').val();
@@ -116,16 +120,14 @@
 
             // 去时间 舍去时分秒
             var sDate = new Date(data[7].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
-            var eDate = NaN;
-            if (data[8] != '') {
-                eDate = new Date(data[8].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
-            }
+            var eDate = new Date(data[8].split(" ")[0]).getTime();//日期列，Date对象参数可以为----/--/--格式，其他格式需要自己转为此种格式，获取时间戳
             if (rx.test(min) && rx.test(max)) {
                 min = new Date(min).getTime();
                 max = new Date(max).getTime();
 
-                return (sDate >= min && (isNaN(eDate) || eDate <= max))/* ||
-                    (date >= max && date <= min)//先后时间填写反，如果按照字段说明，那么去掉这个判断*/
+                return (sDate >= min && (isNaN(eDate) || eDate <= max))
+                /* ||
+                                    (date >= max && date <= min)//先后时间填写反，如果按照字段说明，那么去掉这个判断*/
             }
 
             return true;
