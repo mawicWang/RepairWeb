@@ -55,6 +55,7 @@ public class CharacterController {
         if (id == null) {
             character = new Character();
             character.setRoleCode(roleCode);
+            character.setEnabled(true);
         } else {
             character = characterRepository.findById(id).get();
         }

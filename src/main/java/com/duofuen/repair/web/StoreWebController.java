@@ -45,6 +45,7 @@ public class StoreWebController {
             model.addAttribute("listAddress2", listAddress2);
         } else {
             store = new Store();
+            store.setEnabled(true);
         }
 
         Iterable<Address1> listAddress1 = address1Repository.findAll();
