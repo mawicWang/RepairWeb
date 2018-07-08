@@ -98,13 +98,17 @@ public class ImageController {
                 image.setImageContent(imgByte);
                 image.setCreateTime(Date.from(Instant.now()));
                 imageRepository.save(image);
-            } catch (Exception ignored) {
+
+                RbImage rbImage = new RbImage();
+                rbImage.setImageId(image.getId());
+
+
+                baseResponse = BaseResponse.success(rbImage);
+            } catch (Exception e) {
+                e.printStackTrace();
+                baseResponse = BaseResponse.fail("upload image fail");
             }
 
-            RbImage rbImage = new RbImage();
-            rbImage.setImageId(123);
-
-            baseResponse = BaseResponse.success(rbImage);
         }
 
         return baseResponse;
