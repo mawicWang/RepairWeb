@@ -1,13 +1,16 @@
 package com.duofuen.repair.rest.wx;
 
 import com.alibaba.fastjson.JSON;
+import com.duofuen.repair.configuration.WxMappingJackson2HttpMessageConverter;
 import com.duofuen.repair.rest.BaseResponse;
 import com.duofuen.repair.util.Const;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -102,12 +105,12 @@ public class WxController implements ServletContextAware {
 
     /**
      * wx.config({
-     *      debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-     *      appId: '', // 必填，公众号的唯一标识
-     *      timestamp: , // 必填，生成签名的时间戳
-     *      nonceStr: '', // 必填，生成签名的随机串
-     *      signature: '',// 必填，签名
-     *      jsApiList: [] // 必填，需要使用的JS接口列表
+     * debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+     * appId: '', // 必填，公众号的唯一标识
+     * timestamp: , // 必填，生成签名的时间戳
+     * nonceStr: '', // 必填，生成签名的随机串
+     * signature: '',// 必填，签名
+     * jsApiList: [] // 必填，需要使用的JS接口列表
      * });
      *
      * @param url the url
@@ -118,7 +121,7 @@ public class WxController implements ServletContextAware {
         BaseResponse<RbWxSignature> baseResponse;
         if (StringUtils.isEmpty(url)) {
             baseResponse = BaseResponse.fail("empty parameter url");
-        }   else {
+        } else {
             // build signature
             String jsapiTicket = getJsapiTicket();
             String noncestr = UUID.randomUUID().toString().replace("-", "");
@@ -142,6 +145,39 @@ public class WxController implements ServletContextAware {
         }
 
         return baseResponse;
+    }
+
+    @GetMapping("/wx/getWxOpenId")
+    public BaseResponse<RbWxOpenId> getWxOpenId(String code) {
+        LOGGER.info("==>restful method getWxOpenId called, code: " + code);
+        BaseResponse<RbWxOpenId> baseResponse;
+
+        Map<String, String> param = new HashMap<>();
+        param.put("APPID", Const.Wx.APP_ID);
+        param.put("SECRET", Const.Wx.SECRET);
+        param.put("CODE", code);
+        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={CODE}&grant_type=authorization_code";
+
+        RestTemplate restTemplate = restTemplate();
+        WebAuthAccessTokenResponse resp = restTemplate.getForObject(url, WebAuthAccessTokenResponse.class, param);
+        LOGGER.info("get web authorization success : {}", JSON.toJSONString(resp));
+
+        if (resp.getErrcode() != null) {
+            baseResponse = BaseResponse.fail(resp.getErrmsg());
+        } else {
+            RbWxOpenId wxOpenId = new RbWxOpenId();
+            wxOpenId.setOpenId(resp.getOpenid());
+            baseResponse = BaseResponse.success(wxOpenId);
+        }
+
+        return baseResponse;
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new WxMappingJackson2HttpMessageConverter());
+        return restTemplate;
     }
 
     @Override

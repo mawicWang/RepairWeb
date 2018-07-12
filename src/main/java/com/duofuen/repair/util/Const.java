@@ -84,8 +84,10 @@ public final class Const {
     }
 
     public final class Wx {
-        public static final String APP_ID = "wxa691be29e7554dcc";
-        public static final String SECRET = "19f042bcce790a9fd71e9174651e5a06";
+        public static final String APP_ID = "wx66e00566d5c87bd7";
+        public static final String SECRET = "511f3f055b1b2582560bc89fac16c05f";
+        public static final String APP_ID_TEST = "wxa691be29e7554dcc";
+        public static final String SECRET_TEST = "19f042bcce790a9fd71e9174651e5a06";
 
 
         public static final String ACCESS_TOKEN = "access_token";
