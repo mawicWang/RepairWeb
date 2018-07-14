@@ -63,6 +63,7 @@ public final class Const {
         public static final String FAIL = "99";
         public static final String UNAUTHORIZED = "40";
         public static final String VARIFY_CODE_SENT_TOO_FREQUENT = "01";
+        public static final String INVALID_PHONE_NUMBER = "02";
 
 
         public static final String HTTP_HEADER_TOKEN = "RestToken";

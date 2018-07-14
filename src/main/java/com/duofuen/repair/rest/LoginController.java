@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
+import static com.duofuen.repair.util.Const.Rest.INVALID_PHONE_NUMBER;
 import static com.duofuen.repair.util.Const.Rest.ROOT_PATH;
 
 @RestController
@@ -37,7 +38,8 @@ public class LoginController {
         if (StringUtils.isEmpty(phoneNum)) {
             baseResponse = BaseResponse.fail("empty parameter phoneNum");
         } else if (!loginService.checkPhoneNumExists(phoneNum)) {
-            baseResponse = BaseResponse.fail("invalid phone number");
+            baseResponse = new BaseResponse<>(INVALID_PHONE_NUMBER,
+                    "后台无此号码，请联系系统管理员", null);
         } else {
             try {
                 // 发送验证码，返回true表示成功发送，false表示5分钟内重复发送
