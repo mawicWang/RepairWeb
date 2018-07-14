@@ -188,12 +188,14 @@ public class OrderController {
         detailOrder.setStoreAddr(store.getCompleteAddr());
         detailOrder.setManagerId(Integer.valueOf(userId));
 
-        Optional<Character> optionalCharacter = characterRepository.findById(order.getRepairmanId());
-        if (optionalCharacter.isPresent()) {
-            Character repairman = optionalCharacter.get();
-            detailOrder.setRepairmanId(repairman.getId());
-            detailOrder.setRepairmanName(repairman.getUsername());
-            detailOrder.setRepairmanPhoneNum(repairman.getPhoneNum());
+        if (order.getRepairmanId() != null) {
+            Optional<Character> optionalCharacter = characterRepository.findById(order.getRepairmanId());
+            if (optionalCharacter.isPresent()) {
+                Character repairman = optionalCharacter.get();
+                detailOrder.setRepairmanId(repairman.getId());
+                detailOrder.setRepairmanName(repairman.getUsername());
+                detailOrder.setRepairmanPhoneNum(repairman.getPhoneNum());
+            }
         }
 
         detailOrder.setTitle(order.getTitle());

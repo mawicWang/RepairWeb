@@ -22,6 +22,7 @@ public class RestControllerAdvice {
     @ResponseBody
     public BaseResponse<?> handleException(Exception e) {
         LOGGER.info("handling Exception {}, {}", e.getClass(), e.getMessage());
+        LOGGER.error(e);
         return BaseResponse.fail(e.toString());
     }
 
@@ -38,6 +39,7 @@ public class RestControllerAdvice {
 
         LOGGER.info(bindingResult.getFieldError().getDefaultMessage());
         LOGGER.info(errorMessage.toString());
+        LOGGER.error(ex);
         return BaseResponse.fail(errorMessage.toString());
     }
 
@@ -46,6 +48,7 @@ public class RestControllerAdvice {
     @ResponseBody
     public BaseResponse<?> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
+        LOGGER.error(ex);
         return BaseResponse.fail("json convert failure!");
     }
 }

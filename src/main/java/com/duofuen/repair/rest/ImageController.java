@@ -105,7 +105,7 @@ public class ImageController {
 
                 baseResponse = BaseResponse.success(rbImage);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e);
                 baseResponse = BaseResponse.fail("upload image fail");
             }
 
