@@ -10,6 +10,7 @@ public class Address2 {
     @Column(name = "addr1_id")
     private Integer addr1Id;
     private String value;
+    private String displayValue;
     @Transient
     private Character character;
 
@@ -53,6 +54,14 @@ public class Address2 {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
+
+    public void setDisplayValue(String displayValue) {
+        this.displayValue = displayValue;
     }
 
     @Override

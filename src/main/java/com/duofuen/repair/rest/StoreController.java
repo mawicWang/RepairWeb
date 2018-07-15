@@ -54,7 +54,7 @@ public class StoreController {
                 RbStoreList.Store store = rbStoreList.giveOneStore();
                 store.setStoreId(s.getId());
                 store.setStoreName(s.getName());
-                store.setStoreAddr(s.getCompleteAddr());
+                store.setStoreAddr(s.getCompleteAddrDisplay());
                 storeList.add(store);
             }
             rbStoreList.setStoreList(storeList);

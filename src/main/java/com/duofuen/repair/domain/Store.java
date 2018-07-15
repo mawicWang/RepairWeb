@@ -85,6 +85,12 @@ public class Store {
         return new StringBuilder().append(address1.getValue()).append(address2.getValue()).append(addr3).toString();
     }
 
+    public String getCompleteAddrDisplay() {
+        return new StringBuilder().append(address1.getValue())
+                .append(address2.getDisplayValue() != null ? address2.getDisplayValue() : address2.getValue())
+                .append(addr3).toString();
+    }
+
     public void setCompleteAddr(String completeAddr) {
         this.completeAddr = completeAddr;
     }

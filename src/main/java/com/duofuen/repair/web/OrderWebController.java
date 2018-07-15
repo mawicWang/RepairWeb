@@ -96,7 +96,7 @@ public class OrderWebController {
 
         // 发送短信给师傅
         String message = MessageFormat.format(Const.MSG_NEW_ORDER, order.getStore().getName(),
-                order.getStore().getCompleteAddr(), order.getStore().getTelephone());
+                order.getStore().getCompleteAddrDisplay(), order.getStore().getTelephone());
         boolean msgSuccess = ChuangLanSmsUtil.sendMsg(characterOptional.get().getPhoneNum(), message);
         if (!msgSuccess) {
             return "发送短信给师傅失败！请人工处理。";

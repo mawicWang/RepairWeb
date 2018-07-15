@@ -109,7 +109,7 @@ public class OrderController {
             } else {
                 // 发送短信给师傅
                 String message = MessageFormat.format(Const.MSG_NEW_ORDER, storeOptional.get().getName(),
-                        storeOptional.get().getCompleteAddr(), storeOptional.get().getTelephone());
+                        storeOptional.get().getCompleteAddrDisplay(), storeOptional.get().getTelephone());
                 boolean msgSuccess = ChuangLanSmsUtil.sendMsg(repairman.getPhoneNum(), message);
                 if (!msgSuccess) {
                     LOGGER.warn("发送短信给师傅失败！");
@@ -148,7 +148,7 @@ public class OrderController {
             Store store = storeRepository.findById(o.getStoreId()).get();
             order.setStoreId(store.getId());
             order.setStoreName(store.getName());
-            order.setStoreAddr(store.getCompleteAddr());
+            order.setStoreAddr(store.getCompleteAddrDisplay());
 
             order.setManagerId(o.getManagerId());
             order.setRepairmanId(o.getRepairmanId());
@@ -185,7 +185,7 @@ public class OrderController {
         detailOrder.setStoreId(store.getId());
         detailOrder.setStoreName(store.getName());
         detailOrder.setStoreTel(store.getTelephone());
-        detailOrder.setStoreAddr(store.getCompleteAddr());
+        detailOrder.setStoreAddr(store.getCompleteAddrDisplay());
         detailOrder.setManagerId(Integer.valueOf(userId));
 
         if (order.getRepairmanId() != null) {
