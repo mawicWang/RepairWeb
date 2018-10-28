@@ -14,6 +14,9 @@ public interface CharacterRepository extends CrudRepository<Character, Integer> 
 
     Character findByPhoneNumAndEnabledTrue(String phoneNum);
 
+    Character findByLoginUsernameAndEnabledTrue(String loginUsername);
+    Character findByLoginUsername(String loginUsername);
+
     List<Character> findAllByRoleCode(String roleCode);
 
     @Query("select c from Character c, CharaAddr2 ca2, Address2 a2, Store st " +

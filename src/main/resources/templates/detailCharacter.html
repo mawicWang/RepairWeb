@@ -30,6 +30,22 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="loginUsername"> 用户名 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="loginUsername" name="loginUsername" class="col-xs-10 col-sm-8" th:field="*{loginUsername}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="loginPassword"> 密码 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="loginPassword" name="loginPassword" class="col-xs-10 col-sm-8" th:field="*{loginPassword}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="roleCode"> 角色 </label>
 
             <div class="col-sm-9">

@@ -10,7 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.Cacheable;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.Instant;
@@ -50,6 +52,22 @@ public class LoginService {
 
             rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
             rbLogin.setToken(updateToken(character.getId()));        // update token
+        }
+        return rbLogin;
+    }
+
+    @Transactional
+    public RbLogin loginByUsername(String username, String pwd, String openId) {
+        RbLogin rbLogin = null;
+        Character character = characterRepository.findByLoginUsernameAndEnabledTrue(username);
+        if (null != character && !StringUtils.isEmpty(pwd) && pwd.equals(character.getLoginPassword())) {
+            LOGGER.info("character {} login success, previous openId is {}. current is {}. bind success",
+                    username, character.getOpenId(), openId);
+            character.setOpenId(openId);
+            characterRepository.save(character);
+
+            rbLogin = new RbLogin(character.getRoleCode(), character.getId().toString());
+            rbLogin.setToken(updateToken(character.getId()));
         }
         return rbLogin;
     }

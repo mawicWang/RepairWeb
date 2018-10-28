@@ -71,6 +71,7 @@ public final class Const {
         public static final String LOGIN_PHONENUM = "phoneNum";
         public static final String LOGIN_PASSWORD = "pwd";
         public static final String LOGIN_OPEN_ID = "openId";
+        public static final String LOGIN_USERNAME = "username";
 
         public static final String ORDER_USER_ID = "userId";
         public static final String ORDER_STEP = "step";

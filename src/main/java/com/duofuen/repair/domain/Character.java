@@ -1,8 +1,5 @@
 package com.duofuen.repair.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-
 import javax.persistence.*;
 
 @Entity
@@ -22,6 +19,24 @@ public class Character {
 
     private Boolean enabled;
 
+    private String loginUsername;
+    private String loginPassword;
+
+    public String getLoginUsername() {
+        return loginUsername;
+    }
+
+    public void setLoginUsername(String loginUsername) {
+        this.loginUsername = loginUsername;
+    }
+
+    public String getLoginPassword() {
+        return loginPassword;
+    }
+
+    public void setLoginPassword(String loginPassword) {
+        this.loginPassword = loginPassword;
+    }
 
     public Integer getId() {
         return id;

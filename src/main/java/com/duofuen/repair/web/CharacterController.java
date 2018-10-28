@@ -67,8 +67,19 @@ public class CharacterController {
     @RequestMapping("/saveCharacter")
     @ResponseBody
     public String saveCharacter(@RequestBody Character character) {
+        if (StringUtils.isEmpty(character.getLoginUsername())) {
+            return "用户名不能为空";
+        }
+        if (StringUtils.isEmpty(character.getLoginPassword())) {
+            return "密码不能为空";
+        }
+        Character found = characterRepository.findByLoginUsername(character.getLoginUsername());
+        if(null != found && !found.getId().equals(character.getId())){
+            return "用户名" + character.getLoginUsername() + "已被使用";
+        }
+
         characterRepository.save(character);
-        return "success";
+        return "修改成功";
     }
 
     @Transactional

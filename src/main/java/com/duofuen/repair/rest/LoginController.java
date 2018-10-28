@@ -32,8 +32,10 @@ public class LoginController {
     @PostMapping(path = "/getValidateCode")
     public BaseResponse<RbNull> getValidateCode(@RequestBody HashMap<String, String> map) {
         LOGGER.info("==>restful method getValidateCode called, parameter: " + map);
-        BaseResponse<RbNull> baseResponse;
+        BaseResponse<RbNull> baseResponse = null;
 
+        // 禁用验证码接口
+        /*
         String phoneNum = map.get(Const.Rest.LOGIN_PHONENUM);
         if (StringUtils.isEmpty(phoneNum)) {
             baseResponse = BaseResponse.fail("empty parameter phoneNum");
@@ -57,6 +59,8 @@ public class LoginController {
             }
         }
         return baseResponse;
+        */
+        return BaseResponse.fail("短信验证码功能已被禁用");
     }
 
     @PostMapping(path = "/loginByPhoneNum")
@@ -74,7 +78,23 @@ public class LoginController {
             baseResponse = BaseResponse.packResultBody(rbLogin, "no phoneNum or pwd wrong");
         }
         return baseResponse;
+    }
 
+    @PostMapping(path = "/loginByUsername")
+    public BaseResponse<RbLogin> loginByUsername(@RequestBody HashMap<String, String> map) {
+        LOGGER.info("==>restful method loginByUsername called, parameter: " + map);
+        BaseResponse<RbLogin> baseResponse;
+
+        String loginUsername = map.get(Const.Rest.LOGIN_USERNAME);
+        String loginPassword = map.get(Const.Rest.LOGIN_PASSWORD);
+        String openId = map.get(Const.Rest.LOGIN_OPEN_ID);
+        if (StringUtils.isEmpty(loginUsername) || StringUtils.isEmpty(loginPassword) || StringUtils.isEmpty(openId)) {
+            baseResponse = BaseResponse.fail("empty parameter username/pwd/openId");
+        } else {
+            RbLogin rbLogin = loginService.loginByUsername(loginUsername, loginPassword, openId);
+            baseResponse = BaseResponse.packResultBody(rbLogin, "no username or pwd wrong");
+        }
+        return baseResponse;
     }
 
     @PostMapping(path = "/loginByOpenId")

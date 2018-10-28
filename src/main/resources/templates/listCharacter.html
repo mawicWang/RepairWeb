@@ -18,6 +18,8 @@
                     <th width="5%">id</th>
                     <th>姓名</th>
                     <th>手机号</th>
+                    <th>用户名</th>
+                    <th>密码</th>
                     <th>openID</th>
                     <th>角色</th>
                     <th>状态</th>
@@ -29,6 +31,8 @@
                     <td th:text="${row.id}"></td>
                     <td th:text="${row.username}"></td>
                     <td th:text="${row.phoneNum}"></td>
+                    <td th:text="${row.loginUsername}"></td>
+                    <td th:text="${row.loginPassword}"></td>
                     <td th:text="${row.openId}"></td>
                     <td th:text="${row.roleCode}"></td>
                     <td>
@@ -89,6 +93,10 @@
                     id: id,
                     roleCode: '[[${param.r}]]'
                 }
+            },
+            saveDone: function (msg) {
+                alertMsg(msg);
+                refreshHome();
             }
         });
     }
