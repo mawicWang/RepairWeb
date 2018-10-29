@@ -115,6 +115,14 @@ public class OrderController {
                     LOGGER.warn("发送短信给师傅失败！");
                 }
             }
+
+            // 发送短信给客服
+            String message = MessageFormat.format(Const.MSG_NEW_ORDER, storeOptional.get().getName(),
+                    storeOptional.get().getCompleteAddrDisplay(), storeOptional.get().getTelephone());
+            boolean msgCusSerSuccess = ChuangLanSmsUtil.sendMsg(Const.CUSTOMER_SERVIER_PHONENUM, message);
+            if (!msgCusSerSuccess) {
+                LOGGER.warn("发送短信给客服失败！");
+            }
         }
 
         return baseResponse;
