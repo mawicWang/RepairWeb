@@ -23,6 +23,7 @@ public class WebAppConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RestInterceptor(restTokenRepository))
                 .addPathPatterns("/rest/**")
-                .excludePathPatterns("/rest/loginByOpenId", "/rest/loginByPhoneNum", "/rest/getValidateCode", "/rest/viewImage");
+                .excludePathPatterns("/rest/loginByOpenId", "/rest/loginByPhoneNum", "/rest/getValidateCode",
+                        "/rest/viewImage", "/rest/loginByUsername");
     }
 }
